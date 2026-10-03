@@ -1,10 +1,33 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
+import { SettingsModule } from './settings/settings.module';
+import { CatalogueModule } from './catalogue/catalogue.module';
+import { PricingModule } from './pricing/pricing.module';
+import { CompaniesModule } from './companies/companies.module';
+import { EmployeesModule } from './employees/employees.module';
+import { OrdersModule } from './orders/orders.module';
+import { KitchenModule } from './kitchen/kitchen.module';
+import { DispatchModule } from './dispatch/dispatch.module';
+import { BillingModule } from './billing/billing.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    AuthModule,
+    SettingsModule,
+    CatalogueModule,
+    PricingModule,
+    CompaniesModule,
+    EmployeesModule,
+    OrdersModule,
+    KitchenModule,
+    DispatchModule,
+    BillingModule,
+    DashboardModule,
+  ],
 })
 export class AppModule {}

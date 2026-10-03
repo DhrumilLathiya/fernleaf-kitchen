@@ -169,9 +169,6 @@ model Option {
   group       OptionGroup @relation(fields: [groupId], references: [id])
 
   prices      OptionPrice[]
-  // If usesPortions is true, we might need a separate model for OptionPortion, 
-  // but for simplicity we can store portion prices as JSON or separate rows if strictly normalized.
-  // To keep it simple as requested, let's assume we handle sizes via another model or JSON.
   portions    Json? // e.g. [{ size: 'large', extraCharge: 2.00 }]
 }
 
