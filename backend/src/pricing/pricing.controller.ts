@@ -5,6 +5,7 @@ import { Roles, RolesGuard } from '../auth/roles.guard';
 
 @Controller('pricing')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 export class PricingController {
   constructor(private pricingService: PricingService) {}
 

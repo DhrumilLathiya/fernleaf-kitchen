@@ -5,6 +5,7 @@ import { SettingsService } from './settings.service';
 
 @Controller('settings')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 export class SettingsController {
   constructor(private settingsService: SettingsService) {}
 

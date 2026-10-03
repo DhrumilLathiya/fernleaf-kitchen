@@ -5,6 +5,7 @@ import { Roles, RolesGuard } from '../auth/roles.guard';
 
 @Controller('employees')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 export class EmployeesController {
   constructor(private employeesService: EmployeesService) {}
 

@@ -20,18 +20,18 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
-  { name: 'Overview', href: '/', icon: Home },
-  { name: 'Orders', href: '/orders', icon: ShoppingBag },
-  { name: 'Catalogue', href: '/catalogue', icon: BookOpen },
-  { name: 'Menu', href: '/menu', icon: MenuSquare },
-  { name: 'Pricing', href: '/pricing', icon: DollarSign },
-  { name: 'Companies', href: '/companies', icon: Building2 },
-  { name: 'Employees', href: '/employees', icon: Users },
-  { name: 'Kitchen', href: '/kitchen', icon: ChefHat },
-  { name: 'Dispatch', href: '/dispatch', icon: Truck },
-  { name: 'Billing', href: '/billing', icon: FileText },
-  { name: 'Reports', href: '/reports', icon: BarChart2 },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Overview', href: '/', icon: Home, roles: ['ADMIN', 'KITCHEN', 'DISPATCH', 'DRIVER'] },
+  { name: 'Orders', href: '/orders', icon: ShoppingBag, roles: ['ADMIN'] },
+  { name: 'Catalogue', href: '/catalogue', icon: BookOpen, roles: ['ADMIN'] },
+  { name: 'Menu', href: '/menu', icon: MenuSquare, roles: ['ADMIN'] },
+  { name: 'Pricing', href: '/pricing', icon: DollarSign, roles: ['ADMIN'] },
+  { name: 'Companies', href: '/companies', icon: Building2, roles: ['ADMIN'] },
+  { name: 'Employees', href: '/employees', icon: Users, roles: ['ADMIN'] },
+  { name: 'Kitchen', href: '/kitchen', icon: ChefHat, roles: ['ADMIN', 'KITCHEN'] },
+  { name: 'Dispatch', href: '/dispatch', icon: Truck, roles: ['ADMIN', 'DISPATCH'] },
+  { name: 'Billing', href: '/billing', icon: FileText, roles: ['ADMIN'] },
+  { name: 'Reports', href: '/reports', icon: BarChart2, roles: ['ADMIN', 'KITCHEN', 'DISPATCH'] },
+  { name: 'Settings', href: '/settings', icon: Settings, roles: ['ADMIN'] },
 ];
 
 export default function Sidebar() {
@@ -65,7 +65,9 @@ export default function Sidebar() {
 
         {/* Nav */}
         <nav className="px-3 space-y-0.5 mt-2">
-          {navItems.map((item) => {
+          {navItems
+            .filter((item) => user?.role && item.roles.includes(user.role))
+            .map((item) => {
             const Icon = item.icon;
             const isActive =
               item.href === '/'
