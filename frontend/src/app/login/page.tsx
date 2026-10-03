@@ -8,8 +8,8 @@ export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const [email, setEmail] = useState('admin@fernleaf.com');
-  const [password, setPassword] = useState('Admin@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -200,14 +200,7 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              {/* Hint */}
-              <div className="mt-6 rounded-xl bg-emerald-50 border border-emerald-100 p-4">
-                <p className="text-xs font-semibold text-emerald-700 mb-1">Demo credentials</p>
-                <p className="text-xs text-emerald-600">
-                  📧 admin@fernleaf.com<br />
-                  🔑 Admin@123
-                </p>
-              </div>
+
             </div>
           </div>
 
