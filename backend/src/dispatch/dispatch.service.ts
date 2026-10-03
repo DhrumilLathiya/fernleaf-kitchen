@@ -71,6 +71,30 @@ export class DispatchService {
     });
   }
 
+  /** Mark a drop as out for delivery */
+  async markOutForDelivery(dropKey: string) {
+    const [companyId, deliveryAddress, deliveryTime] = dropKey.split('|');
+    
+    // Validate driver is assigned
+    const orders = await this.prisma.order.findMany({
+      where: { employee: { companyId }, deliveryAddress, deliveryTime, status: 'CONFIRMED' }
+    });
+    
+    if (orders.length > 0 && !orders[0].driverId) {
+      throw new Error('Cannot mark out for delivery: No driver assigned to this drop.');
+    }
+    
+    return this.prisma.order.updateMany({
+      where: {
+        employee: { companyId },
+        deliveryAddress,
+        deliveryTime,
+        status: 'CONFIRMED',
+      },
+      data: { outForDeliveryAt: new Date() },
+    });
+  }
+
   /** Driver: get my deliveries for today */
   async getMyDeliveries(driverId: string) {
     const today = new Date();

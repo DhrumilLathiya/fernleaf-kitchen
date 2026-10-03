@@ -28,18 +28,24 @@ export class PricingService {
    * If no company tier price exists, falls back to the default tier.
    * Requirement 4.3: Pricing Tiers
    */
-  async resolvePrice(dishId: string, tierId: string): Promise<number> {
-    // Try to find price for the specific tier
-    const tierPrice = await this.prisma.dishPrice.findUnique({
-      where: { dishId_tierId: { dishId, tierId } },
-    });
-    if (tierPrice) return tierPrice.price;
+  async resolvePrice(dishId: string, tierId?: string): Promise<number> {
+    if (tierId) {
+      // If company has a specific tier, try to find price.
+      const tierPrice = await this.prisma.dishPrice.findUnique({
+        where: { dishId_tierId: { dishId, tierId } },
+      });
+      if (tierPrice) return tierPrice.price;
+      
+      // Req 4.3.5: A dish with no price on the employee's tier must not appear at all.
+      throw new Error(`No price found for dish ${dishId} on company's tier.`);
+    }
 
-    // Fall back to default tier
+    // Fall back to default tier only if company has no tier assigned
     const defaultTier = await this.prisma.priceTier.findFirst({
       where: { isDefault: true },
       include: { dishPrices: { where: { dishId } } },
     });
+    
     if (defaultTier?.dishPrices?.[0]) return defaultTier.dishPrices[0].price;
 
     throw new Error(`No price found for dish ${dishId} in any tier.`);

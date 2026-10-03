@@ -29,6 +29,13 @@ export class DispatchController {
     return this.dispatchService.assignDriver(dropKey, body.driverId);
   }
 
+  /** POST /api/dispatch/drops/:dropKey/out-for-delivery */
+  @Post('dispatch/drops/:dropKey/out-for-delivery')
+  @Roles('ADMIN', 'DISPATCH')
+  markOutForDelivery(@Param('dropKey') dropKey: string) {
+    return this.dispatchService.markOutForDelivery(dropKey);
+  }
+
   /** GET /api/driver/deliveries - Driver sees own deliveries */
   @Get('driver/deliveries')
   @Roles('DRIVER', 'ADMIN')
