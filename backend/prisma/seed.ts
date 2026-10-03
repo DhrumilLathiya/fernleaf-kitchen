@@ -236,6 +236,48 @@ async function main() {
       defaultDeliveryTime: '12:30',
     },
   });
+
+  const company3 = await prisma.company.upsert({
+    where: { id: 'comp-3' },
+    update: {},
+    create: {
+      id: 'comp-3',
+      name: 'Sunrise Healthcare',
+      emailDomains: ['sunrisehealth.com'],
+      deliveryAddresses: ['100 Medical Blvd, East Wing'],
+      billingContact: 'finance@sunrisehealth.com',
+      priceTierId: defaultTier.id,
+      defaultDeliveryTime: '11:45',
+    },
+  });
+
+  const company4 = await prisma.company.upsert({
+    where: { id: 'comp-4' },
+    update: {},
+    create: {
+      id: 'comp-4',
+      name: 'EcoEnergy Systems',
+      emailDomains: ['ecoenergy.com'],
+      deliveryAddresses: ['22 Green Way, Eco Park'],
+      billingContact: 'ap@ecoenergy.com',
+      priceTierId: premiumTier.id,
+      defaultDeliveryTime: '13:00',
+    },
+  });
+
+  const company5 = await prisma.company.upsert({
+    where: { id: 'comp-5' },
+    update: {},
+    create: {
+      id: 'comp-5',
+      name: 'Alpha Creative Agency',
+      emailDomains: ['alphacreative.io'],
+      deliveryAddresses: ['7 Arts Ave, Studio 4B'],
+      billingContact: 'billing@alphacreative.io',
+      priceTierId: defaultTier.id,
+      defaultDeliveryTime: '12:15',
+    },
+  });
   console.log('✅ Companies seeded');
 
   // 7. Create Employees
@@ -257,6 +299,61 @@ async function main() {
       firstName: 'Bob',
       lastName: 'Jones',
       email: 'bob@globalfinance.com',
+      companyId: company2.id,
+    },
+  });
+
+  const emp3 = await prisma.employee.upsert({
+    where: { email: 'carol@sunrisehealth.com' },
+    update: {},
+    create: {
+      firstName: 'Carol',
+      lastName: 'Williams',
+      email: 'carol@sunrisehealth.com',
+      companyId: company3.id,
+    },
+  });
+
+  const emp4 = await prisma.employee.upsert({
+    where: { email: 'dave@ecoenergy.com' },
+    update: {},
+    create: {
+      firstName: 'Dave',
+      lastName: 'Brown',
+      email: 'dave@ecoenergy.com',
+      companyId: company4.id,
+    },
+  });
+
+  const emp5 = await prisma.employee.upsert({
+    where: { email: 'eve@alphacreative.io' },
+    update: {},
+    create: {
+      firstName: 'Eve',
+      lastName: 'Davis',
+      email: 'eve@alphacreative.io',
+      companyId: company5.id,
+    },
+  });
+
+  const emp6 = await prisma.employee.upsert({
+    where: { email: 'frank@techcorp.com' },
+    update: {},
+    create: {
+      firstName: 'Frank',
+      lastName: 'Miller',
+      email: 'frank@techcorp.com',
+      companyId: company1.id,
+    },
+  });
+
+  const emp7 = await prisma.employee.upsert({
+    where: { email: 'grace@globalfinance.com' },
+    update: {},
+    create: {
+      firstName: 'Grace',
+      lastName: 'Wilson',
+      email: 'grace@globalfinance.com',
       companyId: company2.id,
     },
   });
@@ -320,7 +417,67 @@ async function main() {
       }
     },
     {
-      employeeId: emp1.id,
+      employeeId: emp3.id,
+      status: 'CONFIRMED' as const,
+      deliveryDate: today,
+      deliveryTime: '11:45',
+      deliveryAddress: company3.deliveryAddresses[0],
+      packaging: 'Standard',
+      totalAmount: 5.5,
+      lines: {
+        create: [
+          { 
+            dishId: 'dish-3', 
+            dishQuantity: 1, 
+            dishPrice: 5.5,
+            combinations: {
+              create: [
+                { quantity: 1, totalPrice: 5.5, chosenOptions: [], kitchenStation: 'Cold' }
+              ]
+            }
+          },
+        ]
+      }
+    },
+    {
+      employeeId: emp4.id,
+      status: 'PLACED' as const,
+      deliveryDate: tomorrow,
+      deliveryTime: '13:00',
+      deliveryAddress: company4.deliveryAddresses[0],
+      packaging: 'Eco-Friendly',
+      totalAmount: 14.0,
+      lines: {
+        create: [
+          { 
+            dishId: 'dish-4', 
+            dishQuantity: 2, 
+            dishPrice: 7.0,
+            combinations: {
+              create: [
+                { quantity: 2, totalPrice: 14.0, chosenOptions: [], kitchenStation: 'Cold' }
+              ]
+            }
+          },
+        ]
+      }
+    },
+    {
+      employeeId: emp5.id,
+      status: 'DRAFT' as const,
+      deliveryDate: tomorrow,
+      deliveryTime: '12:15',
+      deliveryAddress: company5.deliveryAddresses[0],
+      packaging: 'Standard',
+      totalAmount: 3.0,
+      lines: {
+        create: [
+          { dishId: 'dish-5', dishQuantity: 1, dishPrice: 3.0 },
+        ]
+      }
+    },
+    {
+      employeeId: emp6.id,
       status: 'DELIVERED' as const,
       deliveryDate: yesterday,
       deliveryTime: '12:00',
@@ -330,6 +487,39 @@ async function main() {
       lines: {
         create: [
           { dishId: 'dish-1', dishQuantity: 1, dishPrice: 7.5 },
+        ]
+      }
+    },
+    {
+      employeeId: emp7.id,
+      status: 'CONFIRMED' as const,
+      deliveryDate: today,
+      deliveryTime: '12:30',
+      deliveryAddress: company2.deliveryAddresses[0],
+      packaging: 'Premium',
+      totalAmount: 11.0,
+      lines: {
+        create: [
+          { 
+            dishId: 'dish-8', 
+            dishQuantity: 1, 
+            dishPrice: 6.5,
+            combinations: {
+              create: [
+                { quantity: 1, totalPrice: 6.5, chosenOptions: [], kitchenStation: 'Hot Line' }
+              ]
+            }
+          },
+          { 
+            dishId: 'dish-7', 
+            dishQuantity: 1, 
+            dishPrice: 4.5,
+            combinations: {
+              create: [
+                { quantity: 1, totalPrice: 4.5, chosenOptions: [], kitchenStation: 'Hot Line' }
+              ]
+            }
+          },
         ]
       }
     }
