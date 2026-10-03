@@ -1,0 +1,5 @@
+# Railway deployment config for NestJS backend
+[deploy]
+  startCommand = "node dist/main"
+  buildCommand = "npm run build"
+  healthcheckPath = "/api"

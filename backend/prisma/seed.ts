@@ -6,18 +6,28 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database...');
 
-  // 1. Create Admin Staff
-  const hashedPassword = await bcrypt.hash('Admin@123', 10);
-  const admin = await prisma.staff.upsert({
-    where: { email: 'admin@fernleaf.com' },
-    update: {},
-    create: {
-      email: 'admin@fernleaf.com',
-      password: hashedPassword,
-      role: 'ADMIN',
-    },
-  });
-  console.log('✅ Admin staff created:', admin.email);
+  // 1. Create all required Staff accounts (exact credentials per spec)
+  const hashedPassword = await bcrypt.hash('Test@1234', 10);
+  const devHashedPassword = await bcrypt.hash('Admin@123', 10);
+
+  const staffAccounts = [
+    // Required test accounts (exact credentials from spec)
+    { email: 'admin@test.com', password: hashedPassword, role: 'ADMIN' as const },
+    { email: 'kitchen@test.com', password: hashedPassword, role: 'KITCHEN' as const },
+    { email: 'dispatch@test.com', password: hashedPassword, role: 'DISPATCH' as const },
+    { email: 'driver@test.com', password: hashedPassword, role: 'DRIVER' as const },
+    // Dev convenience account
+    { email: 'admin@fernleaf.com', password: devHashedPassword, role: 'ADMIN' as const },
+  ];
+
+  for (const staff of staffAccounts) {
+    await prisma.staff.upsert({
+      where: { email: staff.email },
+      update: {},
+      create: staff,
+    });
+  }
+  console.log('✅ All staff accounts created (incl. required test credentials)');
 
   // 2. Create Price Tiers
   const defaultTier = await prisma.priceTier.upsert({
@@ -199,8 +209,13 @@ async function main() {
   console.log('✅ Settings seeded');
 
   console.log('\n🚀 Database seeded successfully!');
-  console.log('📧 Admin Login: admin@fernleaf.com');
-  console.log('🔑 Admin Password: Admin@123');
+  console.log('\n📋 Required Test Accounts:');
+  console.log('  Admin    → admin@test.com    / Test@1234');
+  console.log('  Kitchen  → kitchen@test.com  / Test@1234');
+  console.log('  Dispatch → dispatch@test.com / Test@1234');
+  console.log('  Driver   → driver@test.com   / Test@1234');
+  console.log('\n🔧 Dev Account:');
+  console.log('  Admin    → admin@fernleaf.com / Admin@123');
 }
 
 main()
