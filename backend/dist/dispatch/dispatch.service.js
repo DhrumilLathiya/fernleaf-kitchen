@@ -18,9 +18,13 @@ let DispatchService = class DispatchService {
         this.prisma = prisma;
     }
     async getDrops(date) {
+        const startOfDay = new Date(date);
+        startOfDay.setUTCHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setUTCHours(23, 59, 59, 999);
         const orders = await this.prisma.order.findMany({
             where: {
-                deliveryDate: new Date(date),
+                deliveryDate: { gte: startOfDay, lte: endOfDay },
                 status: { in: ['CONFIRMED'] },
             },
             include: {
@@ -49,6 +53,12 @@ let DispatchService = class DispatchService {
             drop.totalMeals += order.lines.reduce((s, l) => s + l.dishQuantity, 0);
         }
         return Array.from(dropsMap.values());
+    }
+    async getDrivers() {
+        return this.prisma.staff.findMany({
+            where: { role: 'DRIVER' },
+            select: { id: true, email: true },
+        });
     }
     async assignDriver(dropKey, driverId) {
         const [companyId, deliveryAddress, deliveryTime] = dropKey.split('|');

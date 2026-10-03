@@ -7,12 +7,20 @@ export class KitchenService {
 
   /** Req 4.7 - Get all prep units (combinations) for a date grouped by station */
   async getBoard(date: string, station?: string) {
-    const deliveryDate = new Date(date);
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const combinations = await this.prisma.combination.findMany({
       where: {
         orderLine: {
           order: {
-            deliveryDate,
+            deliveryDate: {
+              gte: startOfDay,
+              lte: endOfDay,
+            },
             status: { in: ['CONFIRMED'] },
           },
         },

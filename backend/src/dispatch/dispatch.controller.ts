@@ -15,6 +15,13 @@ export class DispatchController {
     return this.dispatchService.getDrops(date ?? new Date().toISOString().split('T')[0]);
   }
 
+  /** GET /api/dispatch/drivers */
+  @Get('dispatch/drivers')
+  @Roles('ADMIN', 'DISPATCH')
+  getDrivers() {
+    return this.dispatchService.getDrivers();
+  }
+
   /** POST /api/dispatch/drops/:dropKey/assign */
   @Post('dispatch/drops/:dropKey/assign')
   @Roles('ADMIN', 'DISPATCH')

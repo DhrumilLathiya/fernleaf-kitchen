@@ -7,9 +7,15 @@ export class DispatchService {
 
   /** Req 4.8: Get orders grouped by company/address/time (drops) for a given date */
   async getDrops(date: string) {
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const orders = await this.prisma.order.findMany({
       where: {
-        deliveryDate: new Date(date),
+        deliveryDate: { gte: startOfDay, lte: endOfDay },
         status: { in: ['CONFIRMED'] },
       },
       include: {
@@ -41,6 +47,14 @@ export class DispatchService {
     }
 
     return Array.from(dropsMap.values());
+  }
+
+  /** Get all drivers */
+  async getDrivers() {
+    return this.prisma.staff.findMany({
+      where: { role: 'DRIVER' },
+      select: { id: true, email: true },
+    });
   }
 
   /** Assign a driver to all orders in a drop */

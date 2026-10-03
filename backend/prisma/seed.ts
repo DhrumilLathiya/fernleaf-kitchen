@@ -208,6 +208,142 @@ async function main() {
   });
   console.log('✅ Settings seeded');
 
+  // 6. Create Companies
+  const company1 = await prisma.company.upsert({
+    where: { id: 'comp-1' },
+    update: {},
+    create: {
+      id: 'comp-1',
+      name: 'TechCorp Solutions',
+      emailDomains: ['techcorp.com'],
+      deliveryAddresses: ['123 Innovation Drive, Tech Park'],
+      billingContact: 'billing@techcorp.com',
+      priceTierId: defaultTier.id,
+      defaultDeliveryTime: '12:00',
+    },
+  });
+
+  const company2 = await prisma.company.upsert({
+    where: { id: 'comp-2' },
+    update: {},
+    create: {
+      id: 'comp-2',
+      name: 'Global Finance Inc',
+      emailDomains: ['globalfinance.com'],
+      deliveryAddresses: ['45 Wall Street, Financial District'],
+      billingContact: 'accounts@globalfinance.com',
+      priceTierId: premiumTier.id,
+      defaultDeliveryTime: '12:30',
+    },
+  });
+  console.log('✅ Companies seeded');
+
+  // 7. Create Employees
+  const emp1 = await prisma.employee.upsert({
+    where: { email: 'alice@techcorp.com' },
+    update: {},
+    create: {
+      firstName: 'Alice',
+      lastName: 'Smith',
+      email: 'alice@techcorp.com',
+      companyId: company1.id,
+    },
+  });
+
+  const emp2 = await prisma.employee.upsert({
+    where: { email: 'bob@globalfinance.com' },
+    update: {},
+    create: {
+      firstName: 'Bob',
+      lastName: 'Jones',
+      email: 'bob@globalfinance.com',
+      companyId: company2.id,
+    },
+  });
+  console.log('✅ Employees seeded');
+
+  // 8. Create Orders
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const ordersToCreate = [
+    {
+      employeeId: emp1.id,
+      status: 'CONFIRMED' as const,
+      deliveryDate: today,
+      deliveryTime: '12:00',
+      deliveryAddress: company1.deliveryAddresses[0],
+      packaging: 'Standard',
+      totalAmount: 15.0,
+      lines: {
+        create: [
+          { 
+            dishId: 'dish-1', 
+            dishQuantity: 2, 
+            dishPrice: 7.5,
+            combinations: {
+              create: [
+                { quantity: 2, totalPrice: 15.0, chosenOptions: [], kitchenStation: 'Grill' }
+              ]
+            }
+          },
+        ]
+      }
+    },
+    {
+      employeeId: emp2.id,
+      status: 'CONFIRMED' as const,
+      deliveryDate: today,
+      deliveryTime: '12:30',
+      deliveryAddress: company2.deliveryAddresses[0],
+      packaging: 'Eco-Friendly',
+      totalAmount: 8.0,
+      lines: {
+        create: [
+          { 
+            dishId: 'dish-2', 
+            dishQuantity: 1, 
+            dishPrice: 8.0,
+            combinations: {
+              create: [
+                { quantity: 1, totalPrice: 8.0, chosenOptions: [], kitchenStation: 'Pizza' }
+              ]
+            }
+          },
+        ]
+      }
+    },
+    {
+      employeeId: emp1.id,
+      status: 'DELIVERED' as const,
+      deliveryDate: yesterday,
+      deliveryTime: '12:00',
+      deliveryAddress: company1.deliveryAddresses[0],
+      packaging: 'Standard',
+      totalAmount: 7.5,
+      lines: {
+        create: [
+          { dishId: 'dish-1', dishQuantity: 1, dishPrice: 7.5 },
+        ]
+      }
+    }
+  ];
+
+  for (const order of ordersToCreate) {
+    // Only create if not exists
+    const existing = await prisma.order.findFirst({ where: { employeeId: order.employeeId, deliveryDate: order.deliveryDate } });
+    if (!existing) {
+      await prisma.order.create({ data: order });
+    }
+  }
+  console.log('✅ Orders seeded');
+
   console.log('\n🚀 Database seeded successfully!');
   console.log('\n📋 Required Test Accounts:');
   console.log('  Admin    → admin@test.com    / Test@1234');

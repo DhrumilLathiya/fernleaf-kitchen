@@ -25,13 +25,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Restore session from localStorage on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('fl_token');
-    const storedUser = localStorage.getItem('fl_user');
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    try {
+      const storedToken = localStorage.getItem('fl_token');
+      const storedUser = localStorage.getItem('fl_user');
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+        // Force sync cookie so proxy knows we are logged in
+        document.cookie = `fl_token=${storedToken}; path=/; max-age=604800; samesite=lax`;
+      }
+    } catch (err) {
+      console.error('Failed to parse user session:', err);
+      // Clear corrupt data
+      localStorage.removeItem('fl_token');
+      localStorage.removeItem('fl_user');
+      document.cookie = 'fl_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
@@ -49,6 +60,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await res.json();
     const { accessToken, user: userData } = data;
 
+    // Also set as cookie for server-side proxy/middleware
+    document.cookie = `fl_token=${accessToken}; path=/; max-age=604800; samesite=lax`;
+
     localStorage.setItem('fl_token', accessToken);
     localStorage.setItem('fl_user', JSON.stringify(userData));
     setToken(accessToken);
@@ -56,6 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    // Remove cookie
+    document.cookie = 'fl_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
     localStorage.removeItem('fl_token');
     localStorage.removeItem('fl_user');
     setToken(null);

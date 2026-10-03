@@ -18,12 +18,18 @@ let KitchenService = class KitchenService {
         this.prisma = prisma;
     }
     async getBoard(date, station) {
-        const deliveryDate = new Date(date);
+        const startOfDay = new Date(date);
+        startOfDay.setUTCHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setUTCHours(23, 59, 59, 999);
         const combinations = await this.prisma.combination.findMany({
             where: {
                 orderLine: {
                     order: {
-                        deliveryDate,
+                        deliveryDate: {
+                            gte: startOfDay,
+                            lte: endOfDay,
+                        },
                         status: { in: ['CONFIRMED'] },
                     },
                 },

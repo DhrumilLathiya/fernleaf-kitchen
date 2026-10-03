@@ -25,6 +25,9 @@ let DispatchController = class DispatchController {
     getDrops(date) {
         return this.dispatchService.getDrops(date ?? new Date().toISOString().split('T')[0]);
     }
+    getDrivers() {
+        return this.dispatchService.getDrivers();
+    }
     assignDriver(dropKey, body) {
         return this.dispatchService.assignDriver(dropKey, body.driverId);
     }
@@ -44,6 +47,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DispatchController.prototype, "getDrops", null);
+__decorate([
+    (0, common_1.Get)('dispatch/drivers'),
+    (0, roles_guard_1.Roles)('ADMIN', 'DISPATCH'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], DispatchController.prototype, "getDrivers", null);
 __decorate([
     (0, common_1.Post)('dispatch/drops/:dropKey/assign'),
     (0, roles_guard_1.Roles)('ADMIN', 'DISPATCH'),

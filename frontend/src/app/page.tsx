@@ -1,6 +1,10 @@
+'use client';
+
 import { Bell } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { user } = useAuth();
   return (
     <div className="flex flex-col flex-1 h-full bg-[#f8fafc] text-gray-900 font-sans">
       {/* Top Header */}
