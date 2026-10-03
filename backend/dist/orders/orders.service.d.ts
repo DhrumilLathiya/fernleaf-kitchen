@@ -1,0 +1,267 @@
+import { PrismaService } from '../prisma/prisma.service';
+import { SettingsService } from '../settings/settings.service';
+import { CutoffService } from './cutoff.service';
+import { PricingService } from '../pricing/pricing.service';
+export declare class OrdersService {
+    private prisma;
+    private settingsService;
+    private cutoffService;
+    private pricingService;
+    constructor(prisma: PrismaService, settingsService: SettingsService, cutoffService: CutoffService, pricingService: PricingService);
+    getAll(query: {
+        date?: string;
+        companyId?: string;
+        status?: string;
+        search?: string;
+        page?: number;
+        limit?: number;
+    }): Promise<{
+        orders: ({
+            employee: {
+                company: {
+                    id: string;
+                    name: string;
+                    emailDomains: string[];
+                    deliveryAddresses: string[];
+                    billingContact: string;
+                    ownerId: string | null;
+                    priceTierId: string | null;
+                    defaultDeliveryTime: string | null;
+                    deliveryMinutes: number;
+                    defaultPackaging: string | null;
+                    driverInstructions: string | null;
+                    defaultDriverId: string | null;
+                    hiddenCategoryIds: string[];
+                    hiddenDishIds: string[];
+                };
+            } & {
+                id: string;
+                email: string;
+                allergens: string[];
+                dietaryTags: string[];
+                firstName: string;
+                lastName: string;
+                companyId: string;
+                canChooseAddress: boolean;
+                canChangeTime: boolean;
+                canChangePackaging: boolean;
+            };
+            lines: ({
+                dish: {
+                    id: string;
+                    name: string;
+                    isActive: boolean;
+                    description: string | null;
+                    image: string | null;
+                    sku: string;
+                    temperature: import(".prisma/client").$Enums.Temperature;
+                    costPrice: number;
+                    allergens: string[];
+                    dietaryTags: string[];
+                    kitchenStation: string | null;
+                    minOrderQuantity: number;
+                    categoryId: string;
+                };
+            } & {
+                dishPrice: number;
+                id: string;
+                dishId: string;
+                orderId: string;
+                dishQuantity: number;
+            })[];
+        } & {
+            id: string;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            employeeId: string;
+            deliveryDate: Date;
+            deliveryTime: string;
+            deliveryAddress: string;
+            packaging: string;
+            totalAmount: number;
+            kitchenStartedAt: Date | null;
+            kitchenReadyAt: Date | null;
+            dispatchReadyAt: Date | null;
+            outForDeliveryAt: Date | null;
+            deliveredAt: Date | null;
+            driverId: string | null;
+            deliveryNote: string | null;
+            deliveryPhoto: string | null;
+            isOnTime: boolean | null;
+            invoiceId: string | null;
+        })[];
+        total: number;
+        page: number;
+        limit: number;
+    }>;
+    getOne(id: string): Promise<({
+        employee: {
+            company: {
+                priceTier: {
+                    id: string;
+                    name: string;
+                    isDefault: boolean;
+                    derivedFrom: string | null;
+                } | null;
+            } & {
+                id: string;
+                name: string;
+                emailDomains: string[];
+                deliveryAddresses: string[];
+                billingContact: string;
+                ownerId: string | null;
+                priceTierId: string | null;
+                defaultDeliveryTime: string | null;
+                deliveryMinutes: number;
+                defaultPackaging: string | null;
+                driverInstructions: string | null;
+                defaultDriverId: string | null;
+                hiddenCategoryIds: string[];
+                hiddenDishIds: string[];
+            };
+        } & {
+            id: string;
+            email: string;
+            allergens: string[];
+            dietaryTags: string[];
+            firstName: string;
+            lastName: string;
+            companyId: string;
+            canChooseAddress: boolean;
+            canChangeTime: boolean;
+            canChangePackaging: boolean;
+        };
+        invoice: {
+            id: string;
+            createdAt: Date;
+            companyId: string;
+            isPaid: boolean;
+        } | null;
+        driver: {
+            id: string;
+            email: string;
+            password: string;
+            role: import(".prisma/client").$Enums.StaffRole;
+            createdAt: Date;
+            updatedAt: Date;
+        } | null;
+        lines: ({
+            dish: {
+                id: string;
+                name: string;
+                isActive: boolean;
+                description: string | null;
+                image: string | null;
+                sku: string;
+                temperature: import(".prisma/client").$Enums.Temperature;
+                costPrice: number;
+                allergens: string[];
+                dietaryTags: string[];
+                kitchenStation: string | null;
+                minOrderQuantity: number;
+                categoryId: string;
+            };
+            combinations: {
+                id: string;
+                kitchenStation: string | null;
+                quantity: number;
+                totalPrice: number;
+                chosenOptions: import("@prisma/client/runtime/library").JsonValue;
+                isStarted: boolean;
+                isDone: boolean;
+                startedAt: Date | null;
+                doneAt: Date | null;
+                orderLineId: string;
+            }[];
+        } & {
+            dishPrice: number;
+            id: string;
+            dishId: string;
+            orderId: string;
+            dishQuantity: number;
+        })[];
+    } & {
+        id: string;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        employeeId: string;
+        deliveryDate: Date;
+        deliveryTime: string;
+        deliveryAddress: string;
+        packaging: string;
+        totalAmount: number;
+        kitchenStartedAt: Date | null;
+        kitchenReadyAt: Date | null;
+        dispatchReadyAt: Date | null;
+        outForDeliveryAt: Date | null;
+        deliveredAt: Date | null;
+        driverId: string | null;
+        deliveryNote: string | null;
+        deliveryPhoto: string | null;
+        isOnTime: boolean | null;
+        invoiceId: string | null;
+    }) | null>;
+    create(data: {
+        employeeId: string;
+        deliveryDate: string;
+        deliveryTime: string;
+        deliveryAddress: string;
+        packaging: string;
+        lines: Array<{
+            dishId: string;
+            dishQuantity: number;
+            combinations: Array<{
+                quantity: number;
+                chosenOptions: Array<{
+                    optionId: string;
+                    name: string;
+                    price: number;
+                    size?: string;
+                }>;
+            }>;
+        }>;
+        status?: 'DRAFT' | 'PLACED';
+    }): Promise<{
+        lines: ({
+            combinations: {
+                id: string;
+                kitchenStation: string | null;
+                quantity: number;
+                totalPrice: number;
+                chosenOptions: import("@prisma/client/runtime/library").JsonValue;
+                isStarted: boolean;
+                isDone: boolean;
+                startedAt: Date | null;
+                doneAt: Date | null;
+                orderLineId: string;
+            }[];
+        } & {
+            dishPrice: number;
+            id: string;
+            dishId: string;
+            orderId: string;
+            dishQuantity: number;
+        })[];
+    } & {
+        id: string;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        employeeId: string;
+        deliveryDate: Date;
+        deliveryTime: string;
+        deliveryAddress: string;
+        packaging: string;
+        totalAmount: number;
+        kitchenStartedAt: Date | null;
+        kitchenReadyAt: Date | null;
+        dispatchReadyAt: Date | null;
+        outForDeliveryAt: Date | null;
+        deliveredAt: Date | null;
+        driverId: string | null;
+        deliveryNote: string | null;
+        deliveryPhoto: string | null;
+        isOnTime: boolean | null;
+        invoiceId: string | null;
+    }>;
+    processCutoff(deliveryDate: string): Promise<{
+        cancelled: number;
+        confirmed: number;
+    }>;
+}
