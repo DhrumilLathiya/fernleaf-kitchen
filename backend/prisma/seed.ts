@@ -4,20 +4,21 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log('🌱 Mass Seeding database with 15+ variants...');
 
-  // 1. Create all required Staff accounts (exact credentials per spec)
+  // 1. Create all required Staff accounts
   const hashedPassword = await bcrypt.hash('Test@1234', 10);
   const devHashedPassword = await bcrypt.hash('Admin@123', 10);
 
   const staffAccounts = [
-    // Required test accounts (exact credentials from spec)
     { email: 'admin@test.com', password: hashedPassword, role: 'ADMIN' as const },
     { email: 'kitchen@test.com', password: hashedPassword, role: 'KITCHEN' as const },
     { email: 'dispatch@test.com', password: hashedPassword, role: 'DISPATCH' as const },
     { email: 'driver@test.com', password: hashedPassword, role: 'DRIVER' as const },
-    // Dev convenience account
     { email: 'admin@fernleaf.com', password: devHashedPassword, role: 'ADMIN' as const },
+    // Extra drivers for dispatch testing
+    { email: 'driver2@test.com', password: hashedPassword, role: 'DRIVER' as const },
+    { email: 'driver3@test.com', password: hashedPassword, role: 'DRIVER' as const },
   ];
 
   for (const staff of staffAccounts) {
@@ -27,172 +28,58 @@ async function main() {
       create: staff,
     });
   }
-  console.log('✅ All staff accounts created (incl. required test credentials)');
 
-  // 2. Create Price Tiers
-  const defaultTier = await prisma.priceTier.upsert({
-    where: { name: 'Standard' },
-    update: {},
-    create: { name: 'Standard', isDefault: true },
-  });
-  const premiumTier = await prisma.priceTier.upsert({
-    where: { name: 'Premium' },
-    update: {},
-    create: { name: 'Premium', isDefault: false },
-  });
-  console.log('✅ Price tiers created');
-
-  // 3. Create Categories
-  const cat1 = await prisma.category.upsert({
-    where: { id: 'cat-mains' },
-    update: {},
-    create: { id: 'cat-mains', name: 'Main Course', order: 1 },
-  });
-  const cat2 = await prisma.category.upsert({
-    where: { id: 'cat-starters' },
-    update: {},
-    create: { id: 'cat-starters', name: 'Starters', order: 2 },
-  });
-  const cat3 = await prisma.category.upsert({
-    where: { id: 'cat-desserts' },
-    update: {},
-    create: { id: 'cat-desserts', name: 'Desserts', order: 3 },
-  });
-  const cat4 = await prisma.category.upsert({
-    where: { id: 'cat-drinks' },
-    update: {},
-    create: { id: 'cat-drinks', name: 'Drinks', order: 4 },
-  });
-  console.log('✅ Categories created');
-
-  // 4. Create Dishes
-  const dishes = [
-    {
-      id: 'dish-1',
-      name: 'Grilled Chicken Bowl',
-      description: 'Tender grilled chicken with roasted veggies and quinoa.',
-      sku: 'GCB-001',
-      temperature: 'HOT' as const,
-      costPrice: 7.5,
-      allergens: ['Gluten'],
-      dietaryTags: ['High Protein', 'Gluten Free'],
-      kitchenStation: 'Grill',
-      minOrderQuantity: 1,
-      categoryId: cat1.id,
-    },
-    {
-      id: 'dish-2',
-      name: 'Margherita Pizza',
-      description: 'Classic wood-fired pizza with fresh mozzarella and basil.',
-      sku: 'MZP-002',
-      temperature: 'HOT' as const,
-      costPrice: 8.0,
-      allergens: ['Gluten', 'Dairy'],
-      dietaryTags: ['Vegetarian'],
-      kitchenStation: 'Pizza',
-      minOrderQuantity: 1,
-      categoryId: cat1.id,
-    },
-    {
-      id: 'dish-3',
-      name: 'Caesar Salad',
-      description: 'Crispy romaine lettuce with caesar dressing and croutons.',
-      sku: 'CAS-003',
-      temperature: 'COLD' as const,
-      costPrice: 5.5,
-      allergens: ['Dairy', 'Eggs'],
-      dietaryTags: ['Vegetarian'],
-      kitchenStation: 'Cold',
-      minOrderQuantity: 1,
-      categoryId: cat2.id,
-    },
-    {
-      id: 'dish-4',
-      name: 'Vegan Buddha Bowl',
-      description: 'Colourful bowl with falafel, hummus, and seasonal veggies.',
-      sku: 'VBB-004',
-      temperature: 'COLD' as const,
-      costPrice: 7.0,
-      allergens: [],
-      dietaryTags: ['Vegan', 'Gluten Free'],
-      kitchenStation: 'Cold',
-      minOrderQuantity: 1,
-      categoryId: cat1.id,
-    },
-    {
-      id: 'dish-5',
-      name: 'Chocolate Brownie',
-      description: 'Rich dark chocolate brownie with a gooey centre.',
-      sku: 'CHB-005',
-      temperature: 'COLD' as const,
-      costPrice: 3.0,
-      allergens: ['Gluten', 'Dairy', 'Eggs'],
-      dietaryTags: ['Vegetarian'],
-      kitchenStation: 'Pastry',
-      minOrderQuantity: 1,
-      categoryId: cat3.id,
-    },
-    {
-      id: 'dish-6',
-      name: 'Sparkling Water (500ml)',
-      description: 'Chilled sparkling mineral water.',
-      sku: 'SPW-006',
-      temperature: 'COLD' as const,
-      costPrice: 1.0,
-      allergens: [],
-      dietaryTags: ['Vegan', 'Gluten Free'],
-      kitchenStation: 'Drinks',
-      minOrderQuantity: 1,
-      categoryId: cat4.id,
-    },
-    {
-      id: 'dish-7',
-      name: 'Tomato Soup',
-      description: 'Creamy roasted tomato soup with a swirl of basil oil.',
-      sku: 'TMS-007',
-      temperature: 'HOT' as const,
-      costPrice: 4.5,
-      allergens: ['Dairy'],
-      dietaryTags: ['Vegetarian', 'Gluten Free'],
-      kitchenStation: 'Hot Line',
-      minOrderQuantity: 1,
-      categoryId: cat2.id,
-    },
-    {
-      id: 'dish-8',
-      name: 'Pasta Primavera',
-      description: 'Penne pasta with seasonal vegetables in a light tomato sauce.',
-      sku: 'PAP-008',
-      temperature: 'HOT' as const,
-      costPrice: 6.5,
-      allergens: ['Gluten'],
-      dietaryTags: ['Vegetarian'],
-      kitchenStation: 'Hot Line',
-      minOrderQuantity: 1,
-      categoryId: cat1.id,
-    },
-  ];
-
-  for (const dish of dishes) {
-    await prisma.dish.upsert({
-      where: { id: dish.id },
+  // 2. Price Tiers (15 variants)
+  const tiers: any[] = [];
+  for (let i = 1; i <= 15; i++) {
+    const tier = await prisma.priceTier.upsert({
+      where: { name: i === 1 ? 'Standard' : `Tier ${i}` },
       update: {},
-      create: dish,
+      create: { name: i === 1 ? 'Standard' : `Tier ${i}`, isDefault: i === 1 },
     });
-
-    // Set prices for each tier
-    await prisma.dishPrice.upsert({
-      where: { dishId_tierId: { dishId: dish.id, tierId: defaultTier.id } },
-      update: {},
-      create: { dishId: dish.id, tierId: defaultTier.id, price: dish.costPrice * 1.3 },
-    });
-    await prisma.dishPrice.upsert({
-      where: { dishId_tierId: { dishId: dish.id, tierId: premiumTier.id } },
-      update: {},
-      create: { dishId: dish.id, tierId: premiumTier.id, price: dish.costPrice * 1.5 },
-    });
+    tiers.push(tier);
   }
-  console.log('✅ 8 dishes seeded with prices');
+
+  // 3. Categories (15 variants)
+  const categories: any[] = [];
+  for (let i = 1; i <= 15; i++) {
+    const cat = await prisma.category.upsert({
+      where: { id: `cat-${i}` },
+      update: {},
+      create: { id: `cat-${i}`, name: `Category ${i}`, order: i },
+    });
+    categories.push(cat);
+  }
+
+  // 4. Dishes (15 variants)
+  const kitchenStations = ['Grill', 'Pizza', 'Cold', 'Pastry', 'Drinks', 'Hot Line', 'Fryer', 'Prep'];
+  const dishes: any[] = [];
+  for (let i = 1; i <= 15; i++) {
+    const dish = await prisma.dish.upsert({
+      where: { id: `dish-${i}` },
+      update: {},
+      create: {
+        id: `dish-${i}`,
+        name: `Special Dish ${i}`,
+        description: `Delicious variant ${i}`,
+        sku: `DSH-00${i}`,
+        temperature: i % 2 === 0 ? 'HOT' : 'COLD',
+        costPrice: 5.0 + (i * 0.5),
+        kitchenStation: kitchenStations[i % kitchenStations.length],
+        categoryId: categories[i % categories.length].id,
+      },
+    });
+    dishes.push(dish);
+
+    // Set prices for the first 3 tiers
+    for (let t = 0; t < 3; t++) {
+      await prisma.dishPrice.upsert({
+        where: { dishId_tierId: { dishId: dish.id, tierId: tiers[t].id } },
+        update: {},
+        create: { dishId: dish.id, tierId: tiers[t].id, price: dish.costPrice * (1.2 + (t * 0.1)) },
+      });
+    }
+  }
 
   // 5. Settings
   await prisma.settings.upsert({
@@ -206,160 +93,43 @@ async function main() {
       cutoffTime: '16:00',
     },
   });
-  console.log('✅ Settings seeded');
 
-  // 6. Create Companies
-  const company1 = await prisma.company.upsert({
-    where: { id: 'comp-1' },
-    update: {},
-    create: {
-      id: 'comp-1',
-      name: 'TechCorp Solutions',
-      emailDomains: ['techcorp.com'],
-      deliveryAddresses: ['123 Innovation Drive, Tech Park'],
-      billingContact: 'billing@techcorp.com',
-      priceTierId: defaultTier.id,
-      defaultDeliveryTime: '12:00',
-    },
-  });
+  // 6. Companies (15 variants)
+  const companies: any[] = [];
+  for (let i = 1; i <= 15; i++) {
+    const company = await prisma.company.upsert({
+      where: { id: `comp-${i}` },
+      update: {},
+      create: {
+        id: `comp-${i}`,
+        name: `Corporate Client ${i}`,
+        emailDomains: [`client${i}.com`],
+        deliveryAddresses: [`${i}00 Business Park Dr`],
+        billingContact: `accounts@client${i}.com`,
+        priceTierId: tiers[i % 3].id, // Spread across first 3 tiers
+        defaultDeliveryTime: `12:${(i * 5) % 60 < 10 ? '0' : ''}${(i * 5) % 60}`,
+      },
+    });
+    companies.push(company);
+  }
 
-  const company2 = await prisma.company.upsert({
-    where: { id: 'comp-2' },
-    update: {},
-    create: {
-      id: 'comp-2',
-      name: 'Global Finance Inc',
-      emailDomains: ['globalfinance.com'],
-      deliveryAddresses: ['45 Wall Street, Financial District'],
-      billingContact: 'accounts@globalfinance.com',
-      priceTierId: premiumTier.id,
-      defaultDeliveryTime: '12:30',
-    },
-  });
+  // 7. Employees (15 variants)
+  const employees: any[] = [];
+  for (let i = 1; i <= 15; i++) {
+    const emp = await prisma.employee.upsert({
+      where: { email: `emp${i}@client${i}.com` },
+      update: {},
+      create: {
+        firstName: `Employee`,
+        lastName: `${i}`,
+        email: `emp${i}@client${i}.com`,
+        companyId: companies[i - 1].id,
+      },
+    });
+    employees.push(emp);
+  }
 
-  const company3 = await prisma.company.upsert({
-    where: { id: 'comp-3' },
-    update: {},
-    create: {
-      id: 'comp-3',
-      name: 'Sunrise Healthcare',
-      emailDomains: ['sunrisehealth.com'],
-      deliveryAddresses: ['100 Medical Blvd, East Wing'],
-      billingContact: 'finance@sunrisehealth.com',
-      priceTierId: defaultTier.id,
-      defaultDeliveryTime: '11:45',
-    },
-  });
-
-  const company4 = await prisma.company.upsert({
-    where: { id: 'comp-4' },
-    update: {},
-    create: {
-      id: 'comp-4',
-      name: 'EcoEnergy Systems',
-      emailDomains: ['ecoenergy.com'],
-      deliveryAddresses: ['22 Green Way, Eco Park'],
-      billingContact: 'ap@ecoenergy.com',
-      priceTierId: premiumTier.id,
-      defaultDeliveryTime: '13:00',
-    },
-  });
-
-  const company5 = await prisma.company.upsert({
-    where: { id: 'comp-5' },
-    update: {},
-    create: {
-      id: 'comp-5',
-      name: 'Alpha Creative Agency',
-      emailDomains: ['alphacreative.io'],
-      deliveryAddresses: ['7 Arts Ave, Studio 4B'],
-      billingContact: 'billing@alphacreative.io',
-      priceTierId: defaultTier.id,
-      defaultDeliveryTime: '12:15',
-    },
-  });
-  console.log('✅ Companies seeded');
-
-  // 7. Create Employees
-  const emp1 = await prisma.employee.upsert({
-    where: { email: 'alice@techcorp.com' },
-    update: {},
-    create: {
-      firstName: 'Alice',
-      lastName: 'Smith',
-      email: 'alice@techcorp.com',
-      companyId: company1.id,
-    },
-  });
-
-  const emp2 = await prisma.employee.upsert({
-    where: { email: 'bob@globalfinance.com' },
-    update: {},
-    create: {
-      firstName: 'Bob',
-      lastName: 'Jones',
-      email: 'bob@globalfinance.com',
-      companyId: company2.id,
-    },
-  });
-
-  const emp3 = await prisma.employee.upsert({
-    where: { email: 'carol@sunrisehealth.com' },
-    update: {},
-    create: {
-      firstName: 'Carol',
-      lastName: 'Williams',
-      email: 'carol@sunrisehealth.com',
-      companyId: company3.id,
-    },
-  });
-
-  const emp4 = await prisma.employee.upsert({
-    where: { email: 'dave@ecoenergy.com' },
-    update: {},
-    create: {
-      firstName: 'Dave',
-      lastName: 'Brown',
-      email: 'dave@ecoenergy.com',
-      companyId: company4.id,
-    },
-  });
-
-  const emp5 = await prisma.employee.upsert({
-    where: { email: 'eve@alphacreative.io' },
-    update: {},
-    create: {
-      firstName: 'Eve',
-      lastName: 'Davis',
-      email: 'eve@alphacreative.io',
-      companyId: company5.id,
-    },
-  });
-
-  const emp6 = await prisma.employee.upsert({
-    where: { email: 'frank@techcorp.com' },
-    update: {},
-    create: {
-      firstName: 'Frank',
-      lastName: 'Miller',
-      email: 'frank@techcorp.com',
-      companyId: company1.id,
-    },
-  });
-
-  const emp7 = await prisma.employee.upsert({
-    where: { email: 'grace@globalfinance.com' },
-    update: {},
-    create: {
-      firstName: 'Grace',
-      lastName: 'Wilson',
-      email: 'grace@globalfinance.com',
-      companyId: company2.id,
-    },
-  });
-  console.log('✅ Employees seeded');
-
-  // 8. Create Orders
+  // 8. Orders (15 variants - mixed statuses and dates)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -369,179 +139,47 @@ async function main() {
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  const ordersToCreate = [
-    {
-      employeeId: emp1.id,
-      status: 'CONFIRMED' as const,
-      deliveryDate: today,
-      deliveryTime: '12:00',
-      deliveryAddress: company1.deliveryAddresses[0],
-      packaging: 'Standard',
-      totalAmount: 15.0,
-      lines: {
-        create: [
-          { 
-            dishId: 'dish-1', 
-            dishQuantity: 2, 
-            dishPrice: 7.5,
-            combinations: {
-              create: [
-                { quantity: 2, totalPrice: 15.0, chosenOptions: [], kitchenStation: 'Grill' }
-              ]
-            }
-          },
-        ]
-      }
-    },
-    {
-      employeeId: emp2.id,
-      status: 'CONFIRMED' as const,
-      deliveryDate: today,
-      deliveryTime: '12:30',
-      deliveryAddress: company2.deliveryAddresses[0],
-      packaging: 'Eco-Friendly',
-      totalAmount: 8.0,
-      lines: {
-        create: [
-          { 
-            dishId: 'dish-2', 
-            dishQuantity: 1, 
-            dishPrice: 8.0,
-            combinations: {
-              create: [
-                { quantity: 1, totalPrice: 8.0, chosenOptions: [], kitchenStation: 'Pizza' }
-              ]
-            }
-          },
-        ]
-      }
-    },
-    {
-      employeeId: emp3.id,
-      status: 'CONFIRMED' as const,
-      deliveryDate: today,
-      deliveryTime: '11:45',
-      deliveryAddress: company3.deliveryAddresses[0],
-      packaging: 'Standard',
-      totalAmount: 5.5,
-      lines: {
-        create: [
-          { 
-            dishId: 'dish-3', 
-            dishQuantity: 1, 
-            dishPrice: 5.5,
-            combinations: {
-              create: [
-                { quantity: 1, totalPrice: 5.5, chosenOptions: [], kitchenStation: 'Cold' }
-              ]
-            }
-          },
-        ]
-      }
-    },
-    {
-      employeeId: emp4.id,
-      status: 'PLACED' as const,
-      deliveryDate: tomorrow,
-      deliveryTime: '13:00',
-      deliveryAddress: company4.deliveryAddresses[0],
-      packaging: 'Eco-Friendly',
-      totalAmount: 14.0,
-      lines: {
-        create: [
-          { 
-            dishId: 'dish-4', 
-            dishQuantity: 2, 
-            dishPrice: 7.0,
-            combinations: {
-              create: [
-                { quantity: 2, totalPrice: 14.0, chosenOptions: [], kitchenStation: 'Cold' }
-              ]
-            }
-          },
-        ]
-      }
-    },
-    {
-      employeeId: emp5.id,
-      status: 'DRAFT' as const,
-      deliveryDate: tomorrow,
-      deliveryTime: '12:15',
-      deliveryAddress: company5.deliveryAddresses[0],
-      packaging: 'Standard',
-      totalAmount: 3.0,
-      lines: {
-        create: [
-          { dishId: 'dish-5', dishQuantity: 1, dishPrice: 3.0 },
-        ]
-      }
-    },
-    {
-      employeeId: emp6.id,
-      status: 'DELIVERED' as const,
-      deliveryDate: yesterday,
-      deliveryTime: '12:00',
-      deliveryAddress: company1.deliveryAddresses[0],
-      packaging: 'Standard',
-      totalAmount: 7.5,
-      lines: {
-        create: [
-          { dishId: 'dish-1', dishQuantity: 1, dishPrice: 7.5 },
-        ]
-      }
-    },
-    {
-      employeeId: emp7.id,
-      status: 'CONFIRMED' as const,
-      deliveryDate: today,
-      deliveryTime: '12:30',
-      deliveryAddress: company2.deliveryAddresses[0],
-      packaging: 'Premium',
-      totalAmount: 11.0,
-      lines: {
-        create: [
-          { 
-            dishId: 'dish-8', 
-            dishQuantity: 1, 
-            dishPrice: 6.5,
-            combinations: {
-              create: [
-                { quantity: 1, totalPrice: 6.5, chosenOptions: [], kitchenStation: 'Hot Line' }
-              ]
-            }
-          },
-          { 
-            dishId: 'dish-7', 
-            dishQuantity: 1, 
-            dishPrice: 4.5,
-            combinations: {
-              create: [
-                { quantity: 1, totalPrice: 4.5, chosenOptions: [], kitchenStation: 'Hot Line' }
-              ]
-            }
-          },
-        ]
-      }
-    }
-  ];
+  const statuses = ['DRAFT', 'PLACED', 'CONFIRMED', 'DELIVERED'];
+  const dates = [yesterday, today, today, today, tomorrow];
 
-  for (const order of ordersToCreate) {
-    // Only create if not exists
-    const existing = await prisma.order.findFirst({ where: { employeeId: order.employeeId, deliveryDate: order.deliveryDate } });
+  for (let i = 1; i <= 15; i++) {
+    const emp = employees[i - 1];
+    const comp = companies[i - 1];
+    const status = statuses[i % statuses.length];
+    const delDate = dates[i % dates.length];
+
+    const existing = await prisma.order.findFirst({ where: { employeeId: emp.id, deliveryDate: delDate } });
     if (!existing) {
-      await prisma.order.create({ data: order });
+      const dish = dishes[i - 1];
+      await prisma.order.create({
+        data: {
+          employeeId: emp.id,
+          status: status as any,
+          deliveryDate: delDate,
+          deliveryTime: comp.defaultDeliveryTime,
+          deliveryAddress: comp.deliveryAddresses[0],
+          packaging: i % 2 === 0 ? 'Premium' : 'Standard',
+          totalAmount: 12.0,
+          lines: {
+            create: [
+              { 
+                dishId: dish.id, 
+                dishQuantity: (i % 3) + 1, 
+                dishPrice: 12.0,
+                combinations: {
+                  create: [
+                    { quantity: (i % 3) + 1, totalPrice: 12.0, chosenOptions: [], kitchenStation: dish.kitchenStation }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      });
     }
   }
-  console.log('✅ Orders seeded');
 
-  console.log('\n🚀 Database seeded successfully!');
-  console.log('\n📋 Required Test Accounts:');
-  console.log('  Admin    → admin@test.com    / Test@1234');
-  console.log('  Kitchen  → kitchen@test.com  / Test@1234');
-  console.log('  Dispatch → dispatch@test.com / Test@1234');
-  console.log('  Driver   → driver@test.com   / Test@1234');
-  console.log('\n🔧 Dev Account:');
-  console.log('  Admin    → admin@fernleaf.com / Admin@123');
+  console.log('✅ Mass Seeding complete: 15 companies, 15 employees, 15 dishes, 15 tiers, 15 orders.');
 }
 
 main()
