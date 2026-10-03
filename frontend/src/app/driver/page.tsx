@@ -13,6 +13,7 @@ interface DeliveryDrop {
     id: string;
     employee: { firstName: string; lastName: string };
     total: number;
+    status: string;
   }[];
   status: string;
   isDelivered: boolean;
@@ -33,8 +34,36 @@ export default function DriverPage() {
     async function fetchDeliveries() {
       if (!token) return;
       try {
-        const data = await api.get<DeliveryDrop[]>('/driver/deliveries', token);
-        setDeliveries(data);
+        const rawOrders = await api.get<any[]>('/driver/deliveries', token);
+        
+        // Group raw orders into drops
+        const dropsMap = new Map<string, DeliveryDrop>();
+        for (const order of rawOrders) {
+          const key = `${order.employee.companyId}|${order.deliveryAddress}|${order.deliveryTime}`;
+          if (!dropsMap.has(key)) {
+            dropsMap.set(key, {
+              id: key,
+              deliveryTime: order.deliveryTime,
+              companyName: order.employee.company.name,
+              deliveryAddress: order.deliveryAddress,
+              orders: [],
+              status: order.status,
+              isDelivered: true, // Will track if all orders in drop are delivered
+            });
+          }
+          const drop = dropsMap.get(key)!;
+          drop.orders.push({
+            id: order.id,
+            employee: order.employee,
+            total: order.total,
+            status: order.status
+          });
+          if (order.status !== 'DELIVERED') {
+            drop.isDelivered = false;
+          }
+        }
+        
+        setDeliveries(Array.from(dropsMap.values()));
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -59,9 +88,31 @@ export default function DriverPage() {
         return drop;
       }));
       
-      // For simplicity, refetch
-      const data = await api.get<DeliveryDrop[]>('/driver/deliveries', token);
-      setDeliveries(data);
+      const rawOrders = await api.get<any[]>('/driver/deliveries', token);
+      const dropsMap = new Map<string, DeliveryDrop>();
+      for (const order of rawOrders) {
+        const key = `${order.employee.companyId}|${order.deliveryAddress}|${order.deliveryTime}`;
+        if (!dropsMap.has(key)) {
+          dropsMap.set(key, {
+            id: key,
+            deliveryTime: order.deliveryTime,
+            companyName: order.employee.company.name,
+            deliveryAddress: order.deliveryAddress,
+            orders: [],
+            status: order.status,
+            isDelivered: true,
+          });
+        }
+        const drop = dropsMap.get(key)!;
+        drop.orders.push({
+          id: order.id,
+          employee: order.employee,
+          total: order.total,
+          status: order.status
+        });
+        if (order.status !== 'DELIVERED') drop.isDelivered = false;
+      }
+      setDeliveries(Array.from(dropsMap.values()));
 
       setSelectedOrder(null);
       setNote('');
