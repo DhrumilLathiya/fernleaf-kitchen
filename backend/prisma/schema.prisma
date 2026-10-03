@@ -1,0 +1,281 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StaffRole {
+  ADMIN
+  KITCHEN
+  DISPATCH
+  DRIVER
+}
+
+model Staff {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  role      StaffRole
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // For driver role
+  deliveries Order[] @relation("DriverDeliveries")
+  defaultForCompany Company[] @relation("DefaultDriver")
+}
+
+model Company {
+  id                  String   @id @default(uuid())
+  name                String
+  emailDomains        String[] // E.g. ["test.com", "example.com"]
+  deliveryAddresses   String[]
+  billingContact      String
+  
+  // Relations
+  ownerId             String?
+  owner               Employee? @relation("CompanyOwner", fields: [ownerId], references: [id])
+  employees           Employee[] @relation("CompanyEmployees")
+  
+  // Price Tier
+  priceTierId         String?
+  priceTier           PriceTier? @relation(fields: [priceTierId], references: [id])
+
+  // Delivery defaults
+  defaultDeliveryTime String? // e.g., "12:30"
+  deliveryMinutes     Int      @default(60) // Minutes before delivery order must leave kitchen
+  defaultPackaging    String?
+  driverInstructions  String?
+  defaultDriverId     String?
+  defaultDriver       Staff?    @relation("DefaultDriver", fields: [defaultDriverId], references: [id])
+
+  // Hiding categories/items
+  hiddenCategoryIds   String[]
+  hiddenDishIds       String[]
+
+  invoices            Invoice[]
+}
+
+model Employee {
+  id                  String   @id @default(uuid())
+  email               String   @unique
+  firstName           String
+  lastName            String
+  
+  companyId           String
+  company             Company  @relation("CompanyEmployees", fields: [companyId], references: [id])
+  ownedCompanies      Company[] @relation("CompanyOwner")
+
+  // Permissions
+  canChooseAddress    Boolean  @default(false)
+  canChangeTime       Boolean  @default(false)
+  canChangePackaging  Boolean  @default(false)
+
+  // Preferences
+  allergens           String[]
+  dietaryTags         String[]
+
+  orders              Order[]
+}
+
+model PriceTier {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  isDefault   Boolean  @default(false)
+  
+  // Derived pricing formula could be stored as a string or json, e.g. { type: 'markup_percent', value: 15 }
+  derivedFrom String? 
+
+  companies   Company[]
+  dishPrices  DishPrice[]
+  optionPrices OptionPrice[]
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  order       Int
+  isActive    Boolean  @default(true)
+  isSecret    Boolean  @default(false)
+  
+  dishes      Dish[]
+}
+
+enum Temperature {
+  HOT
+  COLD
+}
+
+model Dish {
+  id                  String   @id @default(uuid())
+  name                String
+  description         String?
+  image               String?
+  sku                 String   @unique
+  temperature         Temperature
+  costPrice           Float
+  allergens           String[]
+  dietaryTags         String[]
+  kitchenStation      String?
+  minOrderQuantity    Int      @default(1)
+  isActive            Boolean  @default(true)
+
+  categoryId          String
+  category            Category @relation(fields: [categoryId], references: [id])
+
+  optionGroups        OptionGroup[]
+  prices              DishPrice[]
+  orderLines          OrderLine[]
+}
+
+model DishPrice {
+  id          String   @id @default(uuid())
+  dishId      String
+  dish        Dish     @relation(fields: [dishId], references: [id])
+  tierId      String
+  tier        PriceTier @relation(fields: [tierId], references: [id])
+  price       Float
+
+  @@unique([dishId, tierId])
+}
+
+model OptionGroup {
+  id          String   @id @default(uuid())
+  name        String   // e.g. "Choose your protein"
+  isRequired  Boolean
+  displayOrder Int
+  dishId      String
+  dish        Dish     @relation(fields: [dishId], references: [id])
+  
+  usesPortions Boolean  @default(false) // If true, options have sizes
+
+  options     Option[]
+}
+
+model Option {
+  id          String   @id @default(uuid())
+  name        String
+  cost        Float
+  allergens   String[]
+  dietaryTags String[]
+  displayOrder Int
+
+  groupId     String
+  group       OptionGroup @relation(fields: [groupId], references: [id])
+
+  prices      OptionPrice[]
+  // If usesPortions is true, we might need a separate model for OptionPortion, 
+  // but for simplicity we can store portion prices as JSON or separate rows if strictly normalized.
+  // To keep it simple as requested, let's assume we handle sizes via another model or JSON.
+  portions    Json? // e.g. [{ size: 'large', extraCharge: 2.00 }]
+}
+
+model OptionPrice {
+  id          String   @id @default(uuid())
+  optionId    String
+  option      Option   @relation(fields: [optionId], references: [id])
+  tierId      String
+  tier        PriceTier @relation(fields: [tierId], references: [id])
+  price       Float
+
+  @@unique([optionId, tierId])
+}
+
+enum OrderStatus {
+  DRAFT
+  PLACED
+  CONFIRMED
+  DELIVERED
+  CANCELLED
+  REJECTED
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  employeeId      String
+  employee        Employee @relation(fields: [employeeId], references: [id])
+  
+  deliveryDate    DateTime @db.Date
+  deliveryTime    String
+  deliveryAddress String
+  packaging       String
+  
+  status          OrderStatus @default(DRAFT)
+  
+  // Totals
+  totalAmount     Float
+
+  // Tracking
+  kitchenStartedAt DateTime?
+  kitchenReadyAt   DateTime?
+  dispatchReadyAt  DateTime?
+  outForDeliveryAt DateTime?
+  deliveredAt      DateTime?
+  
+  driverId        String?
+  driver          Staff?   @relation("DriverDeliveries", fields: [driverId], references: [id])
+  deliveryNote    String?
+  deliveryPhoto   String?
+  isOnTime        Boolean?
+
+  invoiceId       String?
+  invoice         Invoice? @relation(fields: [invoiceId], references: [id])
+
+  lines           OrderLine[]
+}
+
+model OrderLine {
+  id              String   @id @default(uuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id])
+  dishId          String
+  dish            Dish     @relation(fields: [dishId], references: [id])
+  
+  dishQuantity    Int
+  dishPrice       Float    // Recorded price at time of order
+  
+  combinations    Combination[]
+}
+
+model Combination {
+  id              String   @id @default(uuid())
+  orderLineId     String
+  orderLine       OrderLine @relation(fields: [orderLineId], references: [id])
+  
+  quantity        Int
+  totalPrice      Float    // Price of this specific combination * quantity
+  
+  // Store the chosen options as JSON or a relational table. 
+  // JSON is much easier for querying specific historical snapshots without complex joins.
+  chosenOptions   Json     // E.g. [{ optionId: "...", name: "Paneer", price: 1.50, size: "regular" }]
+  
+  // Kitchen Prep State
+  kitchenStation  String?  // Copied from dish
+  isStarted       Boolean  @default(false)
+  isDone          Boolean  @default(false)
+  startedAt       DateTime?
+  doneAt          DateTime?
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  isPaid      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  orders      Order[]
+}
+
+model Settings {
+  id                  String   @id @default(uuid()) // Single row table
+  kitchenWorkingDays  Int[]    // e.g. [1, 2, 3, 4, 5] for Mon-Fri
+  kitchenHolidays     DateTime[] @db.Date
+  cutoffDays          Int      @default(2)
+  cutoffTime          String   @default("16:00")
+}
