@@ -37,7 +37,7 @@ export default function KitchenBoardPage() {
   const handleStart = async (id: string) => {
     if (!token) return;
     try {
-      await api.post(`/kitchen/board/${id}/start`, {}, token);
+      await api.post(`/kitchen/units/${id}/start`, {}, token);
       setCombinations((prev) =>
         prev.map((c) => (c.id === id ? { ...c, isStarted: true, startedAt: new Date().toISOString() } : c))
       );
@@ -49,7 +49,7 @@ export default function KitchenBoardPage() {
   const handleComplete = async (id: string) => {
     if (!token) return;
     try {
-      await api.post(`/kitchen/board/${id}/done`, {}, token);
+      await api.post(`/kitchen/units/${id}/done`, {}, token);
       setCombinations((prev) =>
         prev.map((c) =>
           c.id === id
