@@ -39,11 +39,16 @@ export class DispatchService {
           driver: order.driver,
           orders: [],
           totalMeals: 0,
+          isKitchenReady: true, // will turn false if any order is not ready
         });
       }
       const drop = dropsMap.get(key);
       drop.orders.push(order);
       drop.totalMeals += order.lines.reduce((s: number, l: any) => s + l.dishQuantity, 0);
+      
+      if (!order.kitchenReadyAt) {
+        drop.isKitchenReady = false;
+      }
     }
 
     return Array.from(dropsMap.values());
@@ -95,15 +100,20 @@ export class DispatchService {
     });
   }
 
-  /** Driver: get my deliveries for today */
+  /** Driver: get my deliveries */
   async getMyDeliveries(driverId: string) {
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    // Return all CONFIRMED deliveries for this driver (to avoid timezone bugs for today/tomorrow)
+    // and DELIVERED deliveries for today
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
     return this.prisma.order.findMany({
       where: {
         driverId,
-        deliveryDate: today,
-        status: { in: ['CONFIRMED', 'DELIVERED'] },
+        OR: [
+          { status: 'CONFIRMED' }, // All upcoming/pending for this driver
+          { status: 'DELIVERED', deliveryDate: { gte: startOfDay } } // Only today's delivered
+        ]
       },
       include: { employee: { include: { company: true } }, lines: true },
       orderBy: { deliveryTime: 'asc' },

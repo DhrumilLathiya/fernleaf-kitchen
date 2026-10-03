@@ -84,7 +84,18 @@ export default function DispatchBoardPage() {
               {/* Header */}
               <div className="border-b border-gray-100 bg-gray-50/80 px-5 py-4">
                 <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-semibold text-gray-900 text-lg">{drop.company.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-gray-900 text-lg">{drop.company.name}</h3>
+                    {drop.isKitchenReady ? (
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                        Kitchen Ready
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                        Cooking...
+                      </span>
+                    )}
+                  </div>
                   <span className="inline-flex items-center rounded-md bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-600/20">
                     {drop.deliveryTime}
                   </span>
@@ -102,22 +113,40 @@ export default function DispatchBoardPage() {
               <div className="flex-1 p-5">
                 <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
                   <span className="text-sm font-medium text-gray-500">Assignment</span>
-                  <div className="relative">
-                    <select
-                      value={drop.driver?.id || ''}
-                      onChange={(e) => handleAssignDriver(drop.dropId, e.target.value)}
-                      className={`block w-48 appearance-none rounded-lg border py-2 pl-3 pr-8 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
-                        drop.driver ? 'border-green-200 bg-green-50 text-green-700 font-medium' : 'border-gray-300 bg-white text-gray-700'
-                      }`}
-                    >
-                      <option value="" disabled>Unassigned</option>
-                      {drivers.map(d => (
-                        <option key={d.id} value={d.id}>{d.email}</option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <select
+                        value={drop.driver?.id || ''}
+                        onChange={(e) => handleAssignDriver(drop.dropId, e.target.value)}
+                        className={`block w-48 appearance-none rounded-lg border py-2 pl-3 pr-8 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                          drop.driver ? 'border-green-200 bg-green-50 text-green-700 font-medium' : 'border-gray-300 bg-white text-gray-700'
+                        }`}
+                      >
+                        <option value="" disabled>Unassigned</option>
+                        {drivers.map(d => (
+                          <option key={d.id} value={d.id}>{d.email}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                      </div>
                     </div>
+                    {drop.driver && drop.isKitchenReady && (
+                      <button 
+                        onClick={async () => {
+                          if (!token) return;
+                          try {
+                            await api.post(`/dispatch/drops/${encodeURIComponent(drop.dropId)}/out-for-delivery`, {}, token);
+                            alert('Drop marked as out for delivery!');
+                          } catch (err: any) {
+                            alert(`Failed: ${err.message}`);
+                          }
+                        }}
+                        className="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-blue-700 transition"
+                      >
+                        Send Out
+                      </button>
+                    )}
                   </div>
                 </div>
 

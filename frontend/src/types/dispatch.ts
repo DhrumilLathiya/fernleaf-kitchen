@@ -24,6 +24,7 @@ export interface DispatchDrop {
     }[];
   }[];
   totalMeals: number;
+  isKitchenReady?: boolean;
 }
 
 export interface Driver {
