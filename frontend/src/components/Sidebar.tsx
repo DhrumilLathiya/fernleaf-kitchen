@@ -20,7 +20,8 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
-  { name: 'Overview', href: '/', icon: Home, roles: ['ADMIN', 'KITCHEN', 'DISPATCH', 'DRIVER'] },
+  { name: 'Overview', href: '/', icon: Home, roles: ['ADMIN', 'KITCHEN', 'DISPATCH'] },
+  { name: 'My Deliveries', href: '/driver', icon: Truck, roles: ['DRIVER'] },
   { name: 'Orders', href: '/orders', icon: ShoppingBag, roles: ['ADMIN'] },
   { name: 'Catalogue', href: '/catalogue', icon: BookOpen, roles: ['ADMIN'] },
   { name: 'Menu', href: '/menu', icon: MenuSquare, roles: ['ADMIN'] },
