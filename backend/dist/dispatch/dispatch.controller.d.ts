@@ -31,28 +31,29 @@ export declare class DispatchController {
         } & {
             id: string;
             email: string;
+            allergens: string[];
+            dietaryTags: string[];
             firstName: string;
             lastName: string;
             companyId: string;
             canChooseAddress: boolean;
             canChangeTime: boolean;
             canChangePackaging: boolean;
-            allergens: string[];
-            dietaryTags: string[];
         };
         lines: {
-            id: string;
-            orderId: string;
-            dishId: string;
-            dishQuantity: number;
             dishPrice: number;
+            id: string;
+            dishId: string;
+            orderId: string;
+            dishQuantity: number;
         }[];
     } & {
         id: string;
-        deliveryAddress: string;
-        deliveryTime: string;
         status: import(".prisma/client").$Enums.OrderStatus;
+        employeeId: string;
         deliveryDate: Date;
+        deliveryTime: string;
+        deliveryAddress: string;
         packaging: string;
         totalAmount: number;
         kitchenStartedAt: Date | null;
@@ -60,19 +61,19 @@ export declare class DispatchController {
         dispatchReadyAt: Date | null;
         outForDeliveryAt: Date | null;
         deliveredAt: Date | null;
+        driverId: string | null;
         deliveryNote: string | null;
         deliveryPhoto: string | null;
         isOnTime: boolean | null;
-        employeeId: string;
-        driverId: string | null;
         invoiceId: string | null;
     })[]>;
     markDelivered(orderId: string, body: any): Promise<{
         id: string;
-        deliveryAddress: string;
-        deliveryTime: string;
         status: import(".prisma/client").$Enums.OrderStatus;
+        employeeId: string;
         deliveryDate: Date;
+        deliveryTime: string;
+        deliveryAddress: string;
         packaging: string;
         totalAmount: number;
         kitchenStartedAt: Date | null;
@@ -80,11 +81,10 @@ export declare class DispatchController {
         dispatchReadyAt: Date | null;
         outForDeliveryAt: Date | null;
         deliveredAt: Date | null;
+        driverId: string | null;
         deliveryNote: string | null;
         deliveryPhoto: string | null;
         isOnTime: boolean | null;
-        employeeId: string;
-        driverId: string | null;
         invoiceId: string | null;
     }>;
 }
