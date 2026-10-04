@@ -48,11 +48,21 @@ This platform digitizes this lifecycle, offering dedicated context-aware dashboa
 ---
 
 ## 5. Application Screenshots
-*(Note: Refer to project artifacts for actual screenshots if available)*
-- `dashboard.png` - Admin metrics and graphs.
-- `kitchen_board.png` - Station-based prep unit view.
-- `dispatch.png` - Driver assignment and drop grouping.
-- `mobile_driver.png` - Driver's delivery checklist.
+
+### Admin Dashboard
+![Admin Dashboard](docs/screenshots/admin_dashboard.png)
+
+### Kitchen Board
+![Kitchen Board](docs/screenshots/kitchen_board.png)
+
+### Dispatch Board
+![Dispatch Board](docs/screenshots/dispatch_board.png)
+
+### Catalogue Management
+![Catalogue](docs/screenshots/catalogue.png)
+
+### Secure Authentication
+![Login](docs/screenshots/login.png)
 
 ---
 
