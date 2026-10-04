@@ -67,9 +67,12 @@ This platform digitizes this lifecycle, offering dedicated context-aware dashboa
 ---
 
 ## 6. Live Demo and Test Credentials
-There is no live deployment. Please use local setup.
 
-**Test Accounts (Passwords are exactly `Test@1234` or `Admin@123` depending on the seed config, but for this specific seed run:**
+**Live Application:**
+- **Frontend (Vercel):** [https://fernleaf-kitchen.vercel.app](https://fernleaf-kitchen.vercel.app) *(Check your Vercel dashboard for the exact final domain if this varies, e.g., fernleaf-kitchen-55q5.vercel.app)*
+- **Backend API (Render):** `https://fernleaf-kitchen-eo4g.onrender.com/api`
+
+**Test Accounts (Passwords are exactly `Test@1234`):**
 - **Admin**: `admin@test.com` / `Test@1234`
 - **Kitchen**: `kitchen@test.com` / `Test@1234`
 - **Dispatch**: `dispatch@test.com` / `Test@1234`
