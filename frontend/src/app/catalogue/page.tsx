@@ -59,15 +59,23 @@ function DishCard({ dish }: { dish: Dish }) {
         </div>
       )}
 
-      {/* Colour header */}
-      <div className="flex h-20 items-center justify-between bg-gradient-to-br from-[#1B3B36] to-[#2d5a52] px-5">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-emerald-300">
+      {/* Colour / Image header */}
+      <div 
+        className="flex h-32 items-start justify-between bg-gradient-to-br from-[#1B3B36] to-[#2d5a52] px-5 py-4 bg-cover bg-center relative"
+        style={dish.image ? { backgroundImage: `url(${dish.image})` } : {}}
+      >
+        {dish.image && (
+          <div className="absolute inset-0 bg-black/40 mix-blend-multiply" />
+        )}
+        <div className="relative z-10">
+          <p className="text-xs font-bold uppercase tracking-widest text-emerald-300 drop-shadow-md">
             {dish.category.name}
           </p>
-          <p className="text-sm text-white/60 mt-0.5">SKU: {dish.sku}</p>
+          <p className="text-sm font-medium text-white/90 mt-0.5 drop-shadow-md">SKU: {dish.sku}</p>
         </div>
-        <TemperatureBadge temp={dish.temperature} />
+        <div className="relative z-10">
+          <TemperatureBadge temp={dish.temperature} />
+        </div>
       </div>
 
       {/* Card body */}

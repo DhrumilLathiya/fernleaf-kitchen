@@ -99,6 +99,12 @@ export default function MenuPage() {
                     key={dish.id} 
                     className={`relative overflow-hidden rounded-xl border bg-white p-5 shadow-sm transition-all hover:shadow-md ${dish.isActive ? 'border-green-200 ring-1 ring-green-100' : 'border-gray-200 opacity-75'}`}
                   >
+                    {dish.image && (
+                      <div 
+                        className="h-32 -mx-5 -mt-5 mb-4 bg-cover bg-center border-b border-gray-100"
+                        style={{ backgroundImage: `url(${dish.image})` }}
+                      />
+                    )}
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className={`font-semibold ${dish.isActive ? 'text-gray-900' : 'text-gray-500'}`}>{dish.name}</h3>

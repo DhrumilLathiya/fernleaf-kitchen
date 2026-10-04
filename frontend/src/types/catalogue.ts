@@ -18,6 +18,7 @@ export interface Dish {
   id: string;
   name: string;
   description?: string;
+  image?: string;
   sku: string;
   temperature: 'HOT' | 'COLD';
   costPrice: number;
