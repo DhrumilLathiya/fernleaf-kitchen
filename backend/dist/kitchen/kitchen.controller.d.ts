@@ -89,6 +89,10 @@ export declare class KitchenController {
         orderLineId: string;
     })[]>;
     startUnit(id: string): Promise<{
+        orderLine: {
+            orderId: string;
+        };
+    } & {
         id: string;
         kitchenStation: string | null;
         quantity: number;
@@ -101,6 +105,10 @@ export declare class KitchenController {
         orderLineId: string;
     }>;
     doneUnit(id: string): Promise<{
+        orderLine: {
+            orderId: string;
+        };
+    } & {
         id: string;
         kitchenStation: string | null;
         quantity: number;

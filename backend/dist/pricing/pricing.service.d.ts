@@ -37,5 +37,5 @@ export declare class PricingService {
         tierId: string;
         price: number;
     }>;
-    resolvePrice(dishId: string, tierId: string): Promise<number>;
+    resolvePrice(dishId: string, tierId?: string): Promise<number>;
 }

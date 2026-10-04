@@ -70,6 +70,7 @@ __decorate([
 exports.BillingController = BillingController = __decorate([
     (0, common_1.Controller)('billing'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_guard_1.Roles)('ADMIN'),
     __metadata("design:paramtypes", [billing_service_1.BillingService])
 ], BillingController);
 //# sourceMappingURL=billing.controller.js.map

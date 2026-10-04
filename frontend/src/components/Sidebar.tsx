@@ -57,14 +57,40 @@ export default function Sidebar() {
 
       <div className="relative z-10 flex flex-col flex-1">
         {/* Brand / Logo */}
-        <div className="flex h-24 items-center px-8">
+        {/* Brand / Logo */}
+        <div className="flex h-24 items-center px-8 cursor-pointer">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 shadow-lg shadow-emerald-500/20">
-              <span className="text-xl text-white">🌿</span>
+            
+            {/* Continuously Animated Icon */}
+            <div className="relative flex h-11 w-11 items-center justify-center">
+              {/* Spinning dual rings - always visible */}
+              <div className="absolute inset-0 rounded-xl border border-emerald-500/40 animate-[spin_4s_linear_infinite]" />
+              <div className="absolute inset-0 rounded-xl border border-teal-400/40 animate-[spin_5s_linear_infinite_reverse] scale-110" />
+              
+              {/* Glowing pulsating core */}
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 shadow-lg shadow-emerald-500/40 animate-[pulse_3s_ease-in-out_infinite]" />
+              
+              {/* Restored Original Logo */}
+              <span className="relative z-10 text-xl text-white">🌿</span>
             </div>
-            <span className="text-xl font-bold tracking-tight text-white drop-shadow-sm">
-              Fernleaf<span className="text-emerald-400">.</span>
-            </span>
+            
+            {/* Dynamic Animated Text (Multiline Typewriter) */}
+            <div className="relative ml-1 flex flex-col justify-center h-full">
+              {/* Line 1 */}
+              <div 
+                className="font-black tracking-tight text-white text-[22px] leading-tight overflow-hidden whitespace-nowrap border-r-4 border-transparent pr-1 animate-[typing-1_8s_steps(10,end)_infinite]"
+                style={{ width: '0%' }}
+              >
+                FernLeaf
+              </div>
+              {/* Line 2 */}
+              <div 
+                className="font-black tracking-tight text-white text-[22px] leading-tight overflow-hidden whitespace-nowrap border-r-4 border-transparent pr-1 animate-[typing-2_8s_steps(10,end)_infinite]"
+                style={{ width: '0%' }}
+              >
+                Kitchen<span className="text-emerald-400">.</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -124,9 +150,9 @@ export default function Sidebar() {
           <button
             onClick={handleLogout}
             title="Sign out"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-red-500/20 hover:text-red-400"
+            className="flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-400 transition-all hover:bg-red-500/20 hover:text-red-400"
           >
-            <LogOut size={16} />
+            Logout
           </button>
         </div>
       </div>
@@ -141,6 +167,21 @@ export default function Sidebar() {
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background-color: rgba(255, 255, 255, 0.1);
           border-radius: 10px;
+        }
+        @keyframes typing-1 {
+          0%, 5% { width: 0%; border-right-color: #34d399; }
+          30% { width: 100%; border-right-color: transparent; }
+          85% { width: 100%; border-right-color: transparent; }
+          95%, 100% { width: 0%; border-right-color: transparent; }
+        }
+        @keyframes typing-2 {
+          0%, 30% { width: 0%; border-right-color: transparent; }
+          31% { border-right-color: #34d399; }
+          55%, 85% { width: 100%; border-right-color: #34d399; }
+          95%, 100% { width: 0%; border-right-color: transparent; }
+        }
+        @keyframes blink {
+          50% { border-color: transparent; }
         }
       `}} />
     </aside>

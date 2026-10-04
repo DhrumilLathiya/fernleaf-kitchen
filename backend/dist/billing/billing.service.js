@@ -21,7 +21,7 @@ let BillingService = class BillingService {
         return this.prisma.order.findMany({
             where: {
                 employee: { companyId },
-                status: 'CONFIRMED',
+                status: { in: ['CONFIRMED', 'DELIVERED'] },
                 invoiceId: null,
             },
             include: {

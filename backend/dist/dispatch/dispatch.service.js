@@ -46,11 +46,15 @@ let DispatchService = class DispatchService {
                     driver: order.driver,
                     orders: [],
                     totalMeals: 0,
+                    isKitchenReady: true,
                 });
             }
             const drop = dropsMap.get(key);
             drop.orders.push(order);
             drop.totalMeals += order.lines.reduce((s, l) => s + l.dishQuantity, 0);
+            if (!order.kitchenReadyAt) {
+                drop.isKitchenReady = false;
+            }
         }
         return Array.from(dropsMap.values());
     }
@@ -72,14 +76,34 @@ let DispatchService = class DispatchService {
             data: { driverId },
         });
     }
+    async markOutForDelivery(dropKey) {
+        const [companyId, deliveryAddress, deliveryTime] = dropKey.split('|');
+        const orders = await this.prisma.order.findMany({
+            where: { employee: { companyId }, deliveryAddress, deliveryTime, status: 'CONFIRMED' }
+        });
+        if (orders.length > 0 && !orders[0].driverId) {
+            throw new Error('Cannot mark out for delivery: No driver assigned to this drop.');
+        }
+        return this.prisma.order.updateMany({
+            where: {
+                employee: { companyId },
+                deliveryAddress,
+                deliveryTime,
+                status: 'CONFIRMED',
+            },
+            data: { outForDeliveryAt: new Date() },
+        });
+    }
     async getMyDeliveries(driverId) {
-        const today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
+        const startOfDay = new Date();
+        startOfDay.setUTCHours(0, 0, 0, 0);
         return this.prisma.order.findMany({
             where: {
                 driverId,
-                deliveryDate: today,
-                status: { in: ['CONFIRMED', 'DELIVERED'] },
+                OR: [
+                    { status: 'CONFIRMED' },
+                    { status: 'DELIVERED', deliveryDate: { gte: startOfDay } }
+                ]
             },
             include: { employee: { include: { company: true } }, lines: true },
             orderBy: { deliveryTime: 'asc' },

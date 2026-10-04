@@ -114,36 +114,84 @@ async function main() {
     },
   });
 
-  // 6. Companies (15 variants)
+  // 6. Companies (16 variants)
+  const realCompanies = [
+    { name: 'Acme Corporation', domain: 'acme.com', address: '100 Looney Blvd' },
+    { name: 'Globex Inc', domain: 'globex.com', address: '42 Springfield Way' },
+    { name: 'Initech', domain: 'initech.com', address: '4120 Freidrich Ln' },
+    { name: 'Stark Industries', domain: 'stark.com', address: '200 Park Avenue' },
+    { name: 'Wayne Enterprises', domain: 'wayne.com', address: '1007 Mountain Drive' },
+    { name: 'Cyberdyne Systems', domain: 'cyberdyne.com', address: '1814 Terminator Rd' },
+    { name: 'Massive Dynamic', domain: 'massive.com', address: '655 11th Ave' },
+    { name: 'Aperture Science', domain: 'aperture.com', address: '1 Enrichment Center' },
+    { name: 'Hooli', domain: 'hooli.com', address: '1000 Hooli Way' },
+    { name: 'Pied Piper', domain: 'piedpiper.com', address: '5230 Newell Road' },
+    { name: 'Dunder Mifflin', domain: 'dunder.com', address: '1725 Slough Avenue' },
+    { name: 'Bluth Company', domain: 'bluth.com', address: '2501 Balboa Blvd' },
+    { name: 'Umbrella Corp', domain: 'umbrella.com', address: 'Raccoon City Plaza' },
+    { name: 'Weyland-Yutani', domain: 'weyland.com', address: 'Space Station 42' },
+    { name: 'E-Corp', domain: 'ecorp.com', address: '135 E 57th Street' },
+    { name: 'Heizen', domain: 'heizen.com', address: '308 Negra Arroyo Lane' },
+  ];
+
   const companies: any[] = [];
-  for (let i = 1; i <= 15; i++) {
+  for (let i = 0; i < 16; i++) {
+    const compData = realCompanies[i];
     const company = await prisma.company.upsert({
-      where: { id: `comp-${i}` },
+      where: { id: `comp-${i + 1}` },
       update: {},
       create: {
-        id: `comp-${i}`,
-        name: `Corporate Client ${i}`,
-        emailDomains: [`client${i}.com`],
-        deliveryAddresses: [`${i}00 Business Park Dr`],
-        billingContact: `accounts@client${i}.com`,
-        priceTierId: tiers[i % 3].id, // Spread across first 3 tiers
+        id: `comp-${i + 1}`,
+        name: compData.name,
+        emailDomains: [compData.domain],
+        deliveryAddresses: [compData.address],
+        billingContact: `billing@${compData.domain}`,
+        priceTierId: tiers[i % 3].id,
         defaultDeliveryTime: `12:${(i * 5) % 60 < 10 ? '0' : ''}${(i * 5) % 60}`,
       },
     });
     companies.push(company);
   }
 
-  // 7. Employees (15 variants)
+  // 7. Employees (19 variants)
+  const realEmployees = [
+    { first: 'Alice', last: 'Smith' },
+    { first: 'Bob', last: 'Johnson' },
+    { first: 'Charlie', last: 'Williams' },
+    { first: 'Diana', last: 'Brown' },
+    { first: 'Evan', last: 'Jones' },
+    { first: 'Fiona', last: 'Garcia' },
+    { first: 'George', last: 'Miller' },
+    { first: 'Hannah', last: 'Davis' },
+    { first: 'Ian', last: 'Rodriguez' },
+    { first: 'Julia', last: 'Martinez' },
+    { first: 'Kevin', last: 'Hernandez' },
+    { first: 'Laura', last: 'Lopez' },
+    { first: 'Michael', last: 'Gonzalez' },
+    { first: 'Nina', last: 'Wilson' },
+    { first: 'Oscar', last: 'Anderson' },
+    // Heizen Employees
+    { first: 'Walter', last: 'White' },
+    { first: 'Jesse', last: 'Pinkman' },
+    { first: 'Skyler', last: 'White' },
+    { first: 'Saul', last: 'Goodman' },
+  ];
+
   const employees: any[] = [];
-  for (let i = 1; i <= 15; i++) {
+  for (let i = 0; i < 19; i++) {
+    const empData = realEmployees[i];
+    // Map the first 15 employees to the first 15 companies. Map the last 4 employees to Heizen (index 15).
+    const compIndex = i < 15 ? i : 15;
+    const compData = realCompanies[compIndex];
+    const email = `${empData.first.toLowerCase()}.${empData.last.toLowerCase()}@${compData.domain}`;
     const emp = await prisma.employee.upsert({
-      where: { email: `emp${i}@client${i}.com` },
+      where: { email },
       update: {},
       create: {
-        firstName: `Employee`,
-        lastName: `${i}`,
-        email: `emp${i}@client${i}.com`,
-        companyId: companies[i - 1].id,
+        firstName: empData.first,
+        lastName: empData.last,
+        email: email,
+        companyId: companies[compIndex].id,
       },
     });
     employees.push(emp);

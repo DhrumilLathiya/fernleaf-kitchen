@@ -31,6 +31,9 @@ let DispatchController = class DispatchController {
     assignDriver(dropKey, body) {
         return this.dispatchService.assignDriver(dropKey, body.driverId);
     }
+    markOutForDelivery(dropKey) {
+        return this.dispatchService.markOutForDelivery(dropKey);
+    }
     getMyDeliveries(req) {
         return this.dispatchService.getMyDeliveries(req.user.id);
     }
@@ -63,6 +66,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], DispatchController.prototype, "assignDriver", null);
+__decorate([
+    (0, common_1.Post)('dispatch/drops/:dropKey/out-for-delivery'),
+    (0, roles_guard_1.Roles)('ADMIN', 'DISPATCH'),
+    __param(0, (0, common_1.Param)('dropKey')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DispatchController.prototype, "markOutForDelivery", null);
 __decorate([
     (0, common_1.Get)('driver/deliveries'),
     (0, roles_guard_1.Roles)('DRIVER', 'ADMIN'),

@@ -64,6 +64,7 @@ __decorate([
 exports.EmployeesController = EmployeesController = __decorate([
     (0, common_1.Controller)('employees'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_guard_1.Roles)('ADMIN'),
     __metadata("design:paramtypes", [employees_service_1.EmployeesService])
 ], EmployeesController);
 //# sourceMappingURL=employees.controller.js.map

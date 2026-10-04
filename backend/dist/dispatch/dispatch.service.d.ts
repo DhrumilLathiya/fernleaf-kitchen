@@ -8,6 +8,7 @@ export declare class DispatchService {
         email: string;
     }[]>;
     assignDriver(dropKey: string, driverId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    markOutForDelivery(dropKey: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getMyDeliveries(driverId: string): Promise<({
         employee: {
             company: {

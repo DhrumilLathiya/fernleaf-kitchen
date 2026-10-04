@@ -33,11 +33,14 @@ let PricingService = class PricingService {
         });
     }
     async resolvePrice(dishId, tierId) {
-        const tierPrice = await this.prisma.dishPrice.findUnique({
-            where: { dishId_tierId: { dishId, tierId } },
-        });
-        if (tierPrice)
-            return tierPrice.price;
+        if (tierId) {
+            const tierPrice = await this.prisma.dishPrice.findUnique({
+                where: { dishId_tierId: { dishId, tierId } },
+            });
+            if (tierPrice)
+                return tierPrice.price;
+            throw new Error(`No price found for dish ${dishId} on company's tier.`);
+        }
         const defaultTier = await this.prisma.priceTier.findFirst({
             where: { isDefault: true },
             include: { dishPrices: { where: { dishId } } },

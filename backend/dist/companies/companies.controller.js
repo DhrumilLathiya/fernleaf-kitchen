@@ -61,6 +61,7 @@ __decorate([
 exports.CompaniesController = CompaniesController = __decorate([
     (0, common_1.Controller)('companies'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_guard_1.Roles)('ADMIN'),
     __metadata("design:paramtypes", [companies_service_1.CompaniesService])
 ], CompaniesController);
 //# sourceMappingURL=companies.controller.js.map

@@ -100,6 +100,7 @@ __decorate([
 exports.CatalogueController = CatalogueController = __decorate([
     (0, common_1.Controller)('catalogue'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_guard_1.Roles)('ADMIN'),
     __metadata("design:paramtypes", [catalogue_service_1.CatalogueService])
 ], CatalogueController);
 //# sourceMappingURL=catalogue.controller.js.map

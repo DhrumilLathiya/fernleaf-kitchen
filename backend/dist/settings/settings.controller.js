@@ -47,6 +47,7 @@ __decorate([
 exports.SettingsController = SettingsController = __decorate([
     (0, common_1.Controller)('settings'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_guard_1.Roles)('ADMIN'),
     __metadata("design:paramtypes", [settings_service_1.SettingsService])
 ], SettingsController);
 //# sourceMappingURL=settings.controller.js.map

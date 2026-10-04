@@ -55,6 +55,7 @@ __decorate([
 exports.PricingController = PricingController = __decorate([
     (0, common_1.Controller)('pricing'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.RolesGuard),
+    (0, roles_guard_1.Roles)('ADMIN'),
     __metadata("design:paramtypes", [pricing_service_1.PricingService])
 ], PricingController);
 //# sourceMappingURL=pricing.controller.js.map

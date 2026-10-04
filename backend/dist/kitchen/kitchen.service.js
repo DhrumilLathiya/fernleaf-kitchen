@@ -48,14 +48,24 @@ let KitchenService = class KitchenService {
         return combinations;
     }
     async startUnit(id) {
-        return this.prisma.combination.update({
+        const unit = await this.prisma.combination.update({
             where: { id },
             data: { isStarted: true, startedAt: new Date() },
+            include: { orderLine: { select: { orderId: true } } },
         });
+        const orderId = unit.orderLine.orderId;
+        const order = await this.prisma.order.findUnique({ where: { id: orderId } });
+        if (order && !order.kitchenStartedAt) {
+            await this.prisma.order.update({
+                where: { id: orderId },
+                data: { kitchenStartedAt: new Date() },
+            });
+        }
+        return unit;
     }
     async doneUnit(id) {
         const now = new Date();
-        return this.prisma.combination.update({
+        const unit = await this.prisma.combination.update({
             where: { id },
             data: {
                 isDone: true,
@@ -63,7 +73,26 @@ let KitchenService = class KitchenService {
                 isStarted: true,
                 startedAt: now,
             },
+            include: { orderLine: { select: { orderId: true } } },
         });
+        const orderId = unit.orderLine.orderId;
+        const order = await this.prisma.order.findUnique({ where: { id: orderId }, include: { lines: { include: { combinations: true } } } });
+        if (order && !order.kitchenStartedAt) {
+            await this.prisma.order.update({
+                where: { id: orderId },
+                data: { kitchenStartedAt: now },
+            });
+        }
+        if (order) {
+            const allDone = order.lines.every(line => line.combinations.every(c => c.isDone));
+            if (allDone) {
+                await this.prisma.order.update({
+                    where: { id: orderId },
+                    data: { kitchenReadyAt: now },
+                });
+            }
+        }
+        return unit;
     }
 };
 exports.KitchenService = KitchenService;
