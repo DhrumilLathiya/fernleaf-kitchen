@@ -252,27 +252,27 @@ npm run dev
 
 ---
 
-## 18. Testing Strategy
+## 17. Testing Strategy
 - **Manual Testing:** Heavy emphasis on manual E2E testing via the Prisma Seed script (which generates 30 complex scenarios, edge cases, varied statuses, and timezones).
 - **Unit/Integration Tests:** *Not implemented* due to the 48-hour time constraint. If time permitted, `Jest` would be used for API endpoint integration tests.
 
 ---
 
-## 19. Future Improvements
+## 18. Future Improvements
 - Build out the automated Chron jobs for cut-offs.
 - Implement WebSockets for real-time Kitchen board updates without refreshing.
 - Implement proper integer-based monetary calculations.
 
 ---
 
-## 20. Out of Scope
+## 19. Out of Scope
 - Customer-facing ordering portals (strictly an admin tool).
 - Payment gateway integration (Stripe, etc.).
 - Delivery GPS tracking.
 
 ---
 
-## 21. Project Directory Structure
+## 20. Project Directory Structure
 ```text
 fernleaf-kitchen/
 ├── backend/                  # NestJS API
