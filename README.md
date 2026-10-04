@@ -1,5 +1,9 @@
 # Fernleaf Kitchen – Kitchen Operations Admin Panel
 
+> **⚠️ IMPORTANT NOTE FOR EVALUATORS:** 
+> The backend API is hosted on a free tier instance via Render. If the service has not been accessed recently, the very first request (e.g., attempting to log in) may take **45–60 seconds** while the server wakes up from sleep mode. Subsequent requests will execute at normal, lightning-fast speeds.
+
+
 ## 1. Project Overview
 **Project Name:** Fernleaf Kitchen
 **Project Type:** B2B Corporate Meal Management and Kitchen Operations Management System.
