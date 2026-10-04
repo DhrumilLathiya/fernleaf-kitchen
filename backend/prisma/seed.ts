@@ -54,21 +54,21 @@ async function main() {
   // 4. Dishes (15 real variants)
   const kitchenStations = ['Grill', 'Pizza', 'Cold', 'Pastry', 'Drinks', 'Hot Line', 'Fryer', 'Prep'];
   const realFoods = [
-    { name: "Grilled Atlantic Salmon", desc: "Served with roasted asparagus and lemon butter sauce." },
-    { name: "Truffle Mushroom Risotto", desc: "Creamy arborio rice with wild mushrooms and truffle oil." },
-    { name: "Classic Beef Wellington", desc: "Tender beef wrapped in mushroom duxelles and puff pastry." },
-    { name: "Margherita Wood-Fired Pizza", desc: "Fresh mozzarella, San Marzano tomatoes, and basil." },
-    { name: "Caesar Salad with Herb Croutons", desc: "Crisp romaine, parmesan, and house-made dressing." },
-    { name: "Spicy Tuna Poke Bowl", desc: "Fresh ahi tuna, edamame, seaweed salad over sushi rice." },
-    { name: "Artisan Cheese Platter", desc: "Selection of fine cheeses, honey, and assorted crackers." },
-    { name: "Slow-Cooked BBQ Brisket", desc: "Smoked for 14 hours, served with sweet potato mash." },
-    { name: "Vegan Quinoa & Roasted Veggies", desc: "Healthy bowl of protein-rich quinoa and seasonal greens." },
-    { name: "Lemon Butter Asparagus", desc: "Fresh asparagus lightly sautéed in garlic and butter." },
-    { name: "Decadent Chocolate Lava Cake", desc: "Warm chocolate cake with a molten fudge center." },
-    { name: "Matcha Green Tea Tiramisu", desc: "A Japanese twist on the classic Italian dessert." },
-    { name: "Fresh Berry Acai Bowl", desc: "Topped with granola, coconut flakes, and fresh fruit." },
-    { name: "Garlic Herb Butter Steak", desc: "Perfectly seared ribeye with herb compound butter." },
-    { name: "Crispy Calamari with Aioli", desc: "Lightly breaded and fried, served with garlic aioli." }
+    { name: "Grilled Atlantic Salmon", desc: "Served with roasted asparagus and lemon butter sauce.", img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=800&q=80" },
+    { name: "Truffle Mushroom Risotto", desc: "Creamy arborio rice with wild mushrooms and truffle oil.", img: "https://images.unsplash.com/photo-1633436374961-09b92742047b?auto=format&fit=crop&w=800&q=80" },
+    { name: "Classic Beef Wellington", desc: "Tender beef wrapped in mushroom duxelles and puff pastry.", img: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=800&q=80" },
+    { name: "Margherita Wood-Fired Pizza", desc: "Fresh mozzarella, San Marzano tomatoes, and basil.", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80" },
+    { name: "Caesar Salad with Herb Croutons", desc: "Crisp romaine, parmesan, and house-made dressing.", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80" },
+    { name: "Spicy Tuna Poke Bowl", desc: "Fresh ahi tuna, edamame, seaweed salad over sushi rice.", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80" },
+    { name: "Artisan Cheese Platter", desc: "Selection of fine cheeses, honey, and assorted crackers.", img: "https://images.unsplash.com/photo-1622973536968-3ead9e780960?auto=format&fit=crop&w=800&q=80" },
+    { name: "Slow-Cooked BBQ Brisket", desc: "Smoked for 14 hours, served with sweet potato mash.", img: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=800&q=80" },
+    { name: "Vegan Quinoa & Roasted Veggies", desc: "Healthy bowl of protein-rich quinoa and seasonal greens.", img: "https://images.unsplash.com/photo-1543362906-acfc16c67564?auto=format&fit=crop&w=800&q=80" },
+    { name: "Lemon Butter Asparagus", desc: "Fresh asparagus lightly sautéed in garlic and butter.", img: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=800&q=80" },
+    { name: "Decadent Chocolate Lava Cake", desc: "Warm chocolate cake with a molten fudge center.", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80" },
+    { name: "Matcha Green Tea Tiramisu", desc: "A Japanese twist on the classic Italian dessert.", img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=800&q=80" },
+    { name: "Fresh Berry Acai Bowl", desc: "Topped with granola, coconut flakes, and fresh fruit.", img: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=800&q=80" },
+    { name: "Garlic Herb Butter Steak", desc: "Perfectly seared ribeye with herb compound butter.", img: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80" },
+    { name: "Crispy Calamari with Aioli", desc: "Lightly breaded and fried, served with garlic aioli.", img: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80" }
   ];
 
   const dishes: any[] = [];
@@ -81,6 +81,7 @@ async function main() {
         id: `dish-${i}`,
         name: food.name,
         description: food.desc,
+        image: food.img,
         sku: `DSH-00${i}`,
         temperature: i % 2 === 0 ? 'HOT' : 'COLD',
         costPrice: 5.0 + (i * 0.5),
