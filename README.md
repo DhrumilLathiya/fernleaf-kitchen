@@ -249,12 +249,6 @@ npm run dev
 | Settings UI | Low | Not Implemented | Defaulted to database fallbacks. |
 | CSV Imports | Low | Not Implemented | Solved problem; UI heavy to build cleanly. |
 
----
-
-## 17. Assumptions and Ambiguous Requirements
-- **Drop Grouping:** Assumed exact string matches on `companyId` and `deliveryAddress` are sufficient for a "Drop".
-- **Kitchen Stations:** Assumed stations are fluid string tags on a Dish rather than rigid database tables.
-- **Invoicing:** Assumed invoices are simple logical groupings of orders in the DB, without generating physical PDF files.
 
 ---
 
@@ -295,8 +289,3 @@ fernleaf-kitchen/
 └── README.md
 ```
 
----
-
-## 22. Author and Project Information
-**Project:** Fernleaf Kitchen
-**Target Audience:** Evaluators looking for architectural soundness, pragmatic prioritization, and clean, role-based separation of concerns.
