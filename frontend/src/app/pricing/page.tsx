@@ -56,8 +56,8 @@ export default function PricingPage() {
       // Optimistic UI update
       setDishes(prev => prev.map(d => {
         if (d.id === dishId) {
-          const newPrices = d.prices?.filter(p => p.tierId !== tierId) || [];
-          newPrices.push({ tierId, price: parsed, tier: { name: '' } });
+          const newPrices = d.prices?.filter(p => p.tier.id !== tierId) || [];
+          newPrices.push({ id: 'temp-' + Date.now(), price: parsed, tier: { id: tierId, name: '', isDefault: false } });
           return { ...d, prices: newPrices };
         }
         return d;
@@ -75,7 +75,7 @@ export default function PricingPage() {
   };
 
   const getPriceForTier = (dish: Dish, tierId: string) => {
-    const override = dish.prices?.find(p => p.tierId === tierId);
+    const override = dish.prices?.find(p => p.tier.id === tierId);
     return override ? override.price : null;
   };
 
