@@ -51,17 +51,36 @@ async function main() {
     categories.push(cat);
   }
 
-  // 4. Dishes (15 variants)
+  // 4. Dishes (15 real variants)
   const kitchenStations = ['Grill', 'Pizza', 'Cold', 'Pastry', 'Drinks', 'Hot Line', 'Fryer', 'Prep'];
+  const realFoods = [
+    { name: "Grilled Atlantic Salmon", desc: "Served with roasted asparagus and lemon butter sauce." },
+    { name: "Truffle Mushroom Risotto", desc: "Creamy arborio rice with wild mushrooms and truffle oil." },
+    { name: "Classic Beef Wellington", desc: "Tender beef wrapped in mushroom duxelles and puff pastry." },
+    { name: "Margherita Wood-Fired Pizza", desc: "Fresh mozzarella, San Marzano tomatoes, and basil." },
+    { name: "Caesar Salad with Herb Croutons", desc: "Crisp romaine, parmesan, and house-made dressing." },
+    { name: "Spicy Tuna Poke Bowl", desc: "Fresh ahi tuna, edamame, seaweed salad over sushi rice." },
+    { name: "Artisan Cheese Platter", desc: "Selection of fine cheeses, honey, and assorted crackers." },
+    { name: "Slow-Cooked BBQ Brisket", desc: "Smoked for 14 hours, served with sweet potato mash." },
+    { name: "Vegan Quinoa & Roasted Veggies", desc: "Healthy bowl of protein-rich quinoa and seasonal greens." },
+    { name: "Lemon Butter Asparagus", desc: "Fresh asparagus lightly sautéed in garlic and butter." },
+    { name: "Decadent Chocolate Lava Cake", desc: "Warm chocolate cake with a molten fudge center." },
+    { name: "Matcha Green Tea Tiramisu", desc: "A Japanese twist on the classic Italian dessert." },
+    { name: "Fresh Berry Acai Bowl", desc: "Topped with granola, coconut flakes, and fresh fruit." },
+    { name: "Garlic Herb Butter Steak", desc: "Perfectly seared ribeye with herb compound butter." },
+    { name: "Crispy Calamari with Aioli", desc: "Lightly breaded and fried, served with garlic aioli." }
+  ];
+
   const dishes: any[] = [];
   for (let i = 1; i <= 15; i++) {
+    const food = realFoods[i - 1];
     const dish = await prisma.dish.upsert({
       where: { id: `dish-${i}` },
       update: {},
       create: {
         id: `dish-${i}`,
-        name: `Special Dish ${i}`,
-        description: `Delicious variant ${i}`,
+        name: food.name,
+        description: food.desc,
         sku: `DSH-00${i}`,
         temperature: i % 2 === 0 ? 'HOT' : 'COLD',
         costPrice: 5.0 + (i * 0.5),
