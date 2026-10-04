@@ -197,7 +197,7 @@ async function main() {
     employees.push(emp);
   }
 
-  // 8. Orders (15 variants - mixed statuses and dates)
+  // 8. Orders (30 variants - mixed statuses and dates)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -207,47 +207,56 @@ async function main() {
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  const statuses = ['DRAFT', 'PLACED', 'CONFIRMED', 'DELIVERED'];
-  const dates = [yesterday, today, today, today, tomorrow];
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 5);
 
-  for (let i = 1; i <= 15; i++) {
-    const emp = employees[i - 1];
-    const comp = companies[i - 1];
+  const statuses = ['DRAFT', 'PLACED', 'CONFIRMED', 'DELIVERED', 'CANCELLED', 'REJECTED'];
+  const dates = [yesterday, today, today, today, tomorrow, nextWeek];
+
+  const mainDriver = await prisma.staff.findUnique({ where: { email: 'driver@test.com' } });
+
+  for (let i = 1; i <= 30; i++) {
+    const emp = employees[i % employees.length];
+    const comp = companies[i % companies.length];
     const status = statuses[i % statuses.length];
     const delDate = dates[i % dates.length];
 
-    const existing = await prisma.order.findFirst({ where: { employeeId: emp.id, deliveryDate: delDate } });
-    if (!existing) {
-      const dish = dishes[i - 1];
-      await prisma.order.create({
-        data: {
-          employeeId: emp.id,
-          status: status as any,
-          deliveryDate: delDate,
-          deliveryTime: comp.defaultDeliveryTime,
-          deliveryAddress: comp.deliveryAddresses[0],
-          packaging: i % 2 === 0 ? 'Premium' : 'Standard',
-          totalAmount: 12.0,
-          lines: {
-            create: [
-              { 
-                dishId: dish.id, 
-                dishQuantity: (i % 3) + 1, 
-                dishPrice: 12.0,
-                combinations: {
-                  create: [
-                    { quantity: (i % 3) + 1, totalPrice: 12.0, chosenOptions: [], kitchenStation: dish.kitchenStation }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      });
+    const dish = dishes[i % dishes.length];
+    
+    let driverId = null;
+    if (delDate === today && ['CONFIRMED', 'DELIVERED'].includes(status) && mainDriver) {
+        driverId = mainDriver.id;
     }
+
+    await prisma.order.create({
+      data: {
+        employeeId: emp.id,
+        status: status as any,
+        deliveryDate: delDate,
+        deliveryTime: comp.defaultDeliveryTime,
+        deliveryAddress: comp.deliveryAddresses[0],
+        packaging: i % 2 === 0 ? 'Premium' : 'Standard',
+        totalAmount: 12.0,
+        driverId,
+        lines: {
+          create: [
+            { 
+              dishId: dish.id, 
+              dishQuantity: (i % 3) + 1, 
+              dishPrice: 12.0,
+              combinations: {
+                create: [
+                  { quantity: (i % 3) + 1, totalPrice: 12.0, chosenOptions: [], kitchenStation: dish.kitchenStation }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    });
   }
 
-  console.log('✅ Mass Seeding complete: 15 companies, 15 employees, 15 dishes, 15 tiers, 15 orders.');
+  console.log('✅ Mass Seeding complete: 16 companies, 19 employees, 15 dishes, 15 tiers, 30 orders.');
 }
 
 main()
