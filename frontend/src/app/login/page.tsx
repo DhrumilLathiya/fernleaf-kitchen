@@ -29,186 +29,187 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-[#0f2420]">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black font-sans selection:bg-emerald-500 selection:text-white">
+      {/* Cinematic Background Image */}
+      <div 
+        className="absolute inset-0 z-0 bg-[url('/images/login-bg.jpg')] bg-cover bg-center bg-no-repeat transition-transform duration-10000 scale-105"
+      />
+      
+      {/* Moody Overlay with smooth gradient */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/70 via-black/40 to-black/90 backdrop-blur-[2px]" />
 
-      {/* ── Decorative blobs ── */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-[#1B3B36] opacity-40 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-20 h-[400px] w-[400px] rounded-full bg-emerald-900 opacity-30 blur-3xl" />
-
-      {/* ── Left panel — branding ── */}
-      <div className="relative hidden w-1/2 flex-col justify-between p-14 lg:flex">
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-white text-xl font-bold shadow">
-            🌿
-          </div>
-          <span className="text-xl font-bold text-white tracking-tight">Fernleaf Kitchen</span>
-        </div>
-
-        {/* Hero text */}
-        <div className="space-y-6">
-          <div className="inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-emerald-400">
-            Admin Panel
-          </div>
-          <h1 className="text-5xl font-bold leading-tight text-white">
-            Delicious food,<br />
-            <span className="text-emerald-400">perfectly managed.</span>
-          </h1>
-          <p className="text-base text-white/50 max-w-sm leading-relaxed">
-            From cut-off schedules to kitchen prep boards — everything you need to run a world-class corporate catering operation.
-          </p>
-        </div>
-
-        {/* Feature bullets */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { icon: '🍽️', label: 'Menu Catalogue' },
-            { icon: '📦', label: 'Order Management' },
-            { icon: '🏭', label: 'Kitchen Boards' },
-            { icon: '🚚', label: 'Dispatch & Drivers' },
-            { icon: '💷', label: 'Billing & Invoices' },
-            { icon: '📊', label: 'Reports & Analytics' },
-          ].map((f) => (
-            <div key={f.label} className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-3">
-              <span className="text-lg">{f.icon}</span>
-              <span className="text-sm font-medium text-white/70">{f.label}</span>
+      <div className="relative z-10 w-full max-w-5xl px-6 lg:px-12 flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+        
+        {/* Left Side: Brand Story */}
+        <div className="hidden lg:flex flex-1 flex-col justify-center space-y-8 animate-fade-in-up">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-xl shadow-emerald-500/30">
+              <span className="text-3xl text-white drop-shadow-md">🌿</span>
             </div>
-          ))}
+            <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">Fernleaf Kitchen</h1>
+          </div>
+          
+          <div className="space-y-4">
+            <h2 className="text-5xl font-black leading-[1.1] text-white drop-shadow-2xl">
+              Elevate your <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
+                catering experience.
+              </span>
+            </h2>
+            <p className="max-w-md text-lg leading-relaxed text-white/80 drop-shadow">
+              Welcome to the ultimate command center. Seamlessly manage cut-offs, dispatch logistics, and culinary prep across your entire enterprise.
+            </p>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <div className="h-1 w-12 rounded-full bg-emerald-500" />
+            <div className="h-1 w-4 rounded-full bg-white/20" />
+            <div className="h-1 w-4 rounded-full bg-white/20" />
+          </div>
         </div>
-      </div>
 
-      {/* ── Right panel — login form ── */}
-      <div className="flex flex-1 items-center justify-center p-6 lg:p-14">
-        <div className="w-full max-w-md">
+        {/* Right Side: Glassmorphism Login Card */}
+        <div className="w-full max-w-md flex-shrink-0 animate-fade-in">
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-white/10 p-8 shadow-2xl backdrop-blur-2xl border border-white/20 ring-1 ring-black/5">
+            
+            {/* Subtle glow effect behind card */}
+            <div className="absolute -inset-1 z-[-1] bg-gradient-to-br from-emerald-500/20 to-transparent blur-2xl" />
 
-          {/* Card */}
-          <div className="relative overflow-hidden rounded-3xl bg-white shadow-2xl">
-            {/* Top accent */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
+            {/* Mobile Logo (visible only on small screens) */}
+            <div className="mb-10 flex items-center justify-center gap-3 lg:hidden">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg">
+                <span className="text-2xl text-white">🌿</span>
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-white">Fernleaf</h1>
+            </div>
 
-            <div className="p-8 sm:p-10">
-              {/* Mobile logo */}
-              <div className="mb-8 flex items-center gap-3 lg:hidden">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1B3B36] text-white text-lg font-bold">
-                  🌿
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-white tracking-wide">Welcome back</h3>
+              <p className="mt-2 text-sm text-white/60 font-medium">Please sign in to your dashboard.</p>
+            </div>
+
+            {/* Error Banner */}
+            {error && (
+              <div className="mb-6 flex items-center gap-3 rounded-xl bg-red-500/20 border border-red-500/30 p-4 backdrop-blur-md transition-all">
+                <span className="text-red-400">⚠️</span>
+                <p className="text-sm font-medium text-red-100">{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email Input */}
+              <div className="space-y-1.5">
+                <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-white/70">
+                  Email
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-white/40 group-focus-within:text-emerald-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    </svg>
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@fernleaf.com"
+                    className="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-4 text-white placeholder-white/30 ring-1 ring-inset ring-white/10 transition-all focus:bg-white/10 focus:ring-2 focus:ring-inset focus:ring-emerald-400 sm:text-sm sm:leading-6"
+                  />
                 </div>
-                <span className="text-lg font-bold text-gray-900">Fernleaf Kitchen</span>
               </div>
 
-              <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
-              <p className="mt-1.5 text-sm text-gray-500">
-                Sign in to access your admin dashboard
-              </p>
-
-              {/* Error banner */}
-              {error && (
-                <div className="mt-5 flex items-start gap-3 rounded-xl bg-red-50 border border-red-100 p-4">
-                  <span className="text-base">⚠️</span>
-                  <p className="text-sm text-red-700 font-medium">{error}</p>
-                </div>
-              )}
-
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="mt-7 space-y-5">
-                {/* Email */}
-                <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
-                    Email address
+              {/* Password Input */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-white/70">
+                    Password
                   </label>
-                  <div className="relative">
-                    <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                      </svg>
-                    </span>
-                    <input
-                      id="email"
-                      type="email"
-                      required
-                      autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="admin@fernleaf.com"
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-900 placeholder-gray-400 transition focus:border-[#1B3B36] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B3B36]/20"
-                    />
-                  </div>
+                  <a href="#" className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">
+                    Forgot password?
+                  </a>
                 </div>
-
-                {/* Password */}
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="password" className="block text-sm font-semibold text-gray-700">
-                      Password
-                    </label>
-                    <button type="button" className="text-xs text-[#1B3B36] font-medium hover:underline">
-                      Forgot password?
-                    </button>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-white/40 group-focus-within:text-emerald-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
                   </div>
-                  <div className="relative">
-                    <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <input
+                    id="password"
+                    type={showPass ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-12 text-white placeholder-white/30 ring-1 ring-inset ring-white/10 transition-all focus:bg-white/10 focus:ring-2 focus:ring-inset focus:ring-emerald-400 sm:text-sm sm:leading-6"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/40 hover:text-white transition-colors"
+                  >
+                    {showPass ? (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                       </svg>
-                    </span>
-                    <input
-                      id="password"
-                      type={showPass ? 'text' : 'password'}
-                      required
-                      autoComplete="current-password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-12 text-sm text-gray-900 placeholder-gray-400 transition focus:border-[#1B3B36] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B3B36]/20"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPass((s) => !s)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPass ? (
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                        </svg>
-                      ) : (
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      )}
-                    </button>
-                  </div>
+                    ) : (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
+              </div>
 
-                {/* Submit */}
-                <button
-                  id="login-submit"
-                  type="submit"
-                  disabled={loading}
-                  className="relative w-full overflow-hidden rounded-xl bg-[#1B3B36] py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-[#132A26] focus:outline-none focus:ring-2 focus:ring-[#1B3B36]/50 disabled:opacity-60"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                      </svg>
-                      Signing in…
-                    </span>
-                  ) : (
-                    'Sign in to Dashboard'
-                  )}
-                </button>
-              </form>
-
-
-            </div>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full flex justify-center rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-4 text-sm font-bold text-white shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.02] hover:shadow-emerald-500/40 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-black disabled:opacity-70 disabled:hover:scale-100"
+              >
+                {loading ? (
+                  <svg className="h-5 w-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Sign In to Portal
+                    <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </span>
+                )}
+              </button>
+            </form>
           </div>
-
-          <p className="mt-6 text-center text-xs text-white/30">
-            © {new Date().getFullYear()} Fernleaf Kitchen · All rights reserved
+          
+          <p className="mt-8 text-center text-sm text-white/40 font-medium">
+            © {new Date().getFullYear()} Fernleaf Kitchen. All rights reserved.
           </p>
         </div>
       </div>
+      
+      {/* Global styling for the simple animations if not already in tailwind config */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
+        .animate-fade-in {
+          animation: fadeIn 1.2s ease-out forwards;
+        }
+      `}} />
     </div>
   );
 }
