@@ -44,9 +44,24 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   // Protected routes go through full shell
   return (
     <RouteGuard>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-screen overflow-hidden bg-[#f4f7f6] relative">
+        
+        {/* Global Dashboard Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-[url('/images/dashboard-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-[0.15] mix-blend-multiply pointer-events-none"
+        />
+        
+        {/* Optional Logo Watermark as requested */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+          <div className="flex flex-col items-center gap-4 grayscale">
+            <span className="text-[15rem]">🌿</span>
+            <span className="text-8xl font-black tracking-tighter text-black">Fernleaf Kitchen</span>
+          </div>
+        </div>
+
         <Sidebar />
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+        
+        <main className="relative z-10 flex-1 overflow-y-auto">
           {children}
         </main>
       </div>

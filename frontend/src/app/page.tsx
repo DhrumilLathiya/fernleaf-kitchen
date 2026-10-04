@@ -18,7 +18,7 @@ export default function Home() {
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
-    <div className="flex flex-col flex-1 h-full bg-[#f4f7f6] text-gray-900 font-sans relative">
+    <div className="flex flex-col flex-1 h-full bg-transparent text-gray-900 font-sans relative">
       
       {/* Decorative background element */}
       <div className="absolute top-0 right-0 w-full h-80 bg-gradient-to-b from-emerald-100/40 to-transparent pointer-events-none" />
