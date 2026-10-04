@@ -102,8 +102,8 @@ export default function OrdersPage() {
           <p className="text-sm text-red-700">Failed to load orders: {error}</p>
         </div>
       ) : (
-        <div className="mt-2 flex-1 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="overflow-x-auto">
+        <div className="mt-2 flex-1 flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-auto flex-1">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>

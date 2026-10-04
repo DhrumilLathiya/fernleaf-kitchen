@@ -61,7 +61,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         <Sidebar />
         
-        <main className="relative z-10 flex-1 overflow-y-auto">
+        <main className="relative z-10 flex-1 flex flex-col overflow-y-auto">
           {children}
         </main>
       </div>
