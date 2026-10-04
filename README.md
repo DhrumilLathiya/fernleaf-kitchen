@@ -1,160 +1,285 @@
-# Fernleaf Kitchen - Operations Admin Panel
+# Fernleaf Kitchen – Kitchen Operations Admin Panel
 
-This is the internal admin panel for **Fernleaf Kitchen**, a commercial kitchen running corporate meal programs. It handles the full operational lifecycle from catalogue management and corporate pricing to kitchen prep, order dispatching, driver delivery tracking, and billing.
-
-## 1. Local Setup Instructions
-
-**Prerequisites:**
-- Node.js (v18+)
-- PostgreSQL database running locally
-
-**Backend Setup:**
-\`\`\`bash
-cd backend
-npm install
-# Set your DATABASE_URL in .env (e.g., DATABASE_URL="postgresql://user:pass@localhost:5432/fernleaf_kitchen")
-npx prisma db push
-npx prisma db seed
-npm run dev
-\`\`\`
-
-**Frontend Setup:**
-\`\`\`bash
-cd frontend
-npm install
-npm run dev
-\`\`\`
-
-The frontend will be available at `http://localhost:3000`.
-
-**Test Accounts (Password for all is exactly as mandated in PDF):**
-- **Admin**: `admin@test.com` (`Test@1234`)
-- **Kitchen**: `kitchen@test.com` (`Test@1234`)
-- **Dispatch**: `dispatch@test.com` (`Test@1234`)
-- **Driver**: `driver@test.com` (`Test@1234`)
-
-*(Note: The database is pre-seeded with 16 realistic companies (including Heizen), 19 employees, and a full menu with high-quality images and varying order states).*
+## 1. Project Overview
+**Project Name:** Fernleaf Kitchen
+**Project Type:** B2B Corporate Meal Management and Kitchen Operations Management System.
+**Business Domain:** Commercial Kitchen Operations, Corporate Meal Programs, Delivery Logistics.
+**Main Objective:** To provide a centralized platform for managing corporate food orders, streamlining kitchen preparation, optimizing driver dispatch, and automating corporate billing.
+**Technology Stack:** Next.js (React), NestJS, PostgreSQL, Prisma ORM.
+**Project Status:** Functional prototype developed within a 48-hour assignment window. Core workflows (Order -> Kitchen -> Dispatch -> Driver -> Billing) are implemented, with some secondary features de-prioritized for speed.
 
 ---
 
-## 2. Architecture Overview & Data Model
+## 2. Problem Statement & Business Context
+Fernleaf Kitchen runs a corporate meal program where corporate employees can order meals to their offices. Managing this at scale creates massive operational complexity. 
 
-The application uses a standard decoupled architecture:
-- **Frontend**: Next.js 14 (App Router) using TailwindCSS for styling and basic context for state. 
-- **Backend**: NestJS for rigorous modular boundaries and strict role-based access control.
-- **Database**: PostgreSQL interfaced via Prisma ORM.
+The kitchen needs to know exactly how much of each ingredient to prepare across hundreds of individual orders (grouped by dish or station). Dispatch teams need to group completed meals into delivery "drops" (by company, location, and time) and assign them to drivers. Finally, the administration must bill the companies (not the individual employees) for the delivered orders.
 
-### Data Model Diagram
-\`\`\`mermaid
+This platform digitizes this lifecycle, offering dedicated context-aware dashboards for Admins, Kitchen Staff, Dispatchers, and Drivers, ensuring tight coordination across all departments.
+
+---
+
+## 3. Key Features
+- **Authentication and RBAC:** Fully implemented (JWT-based). Strict segregation for Admin, Kitchen, Dispatch, and Driver roles.
+- **Admin Dashboard:** Implemented. High-level financial and operational metrics.
+- **Catalogue & Menu Management:** Partially implemented. Dishes and options can be created and priced, but advanced derived pricing (e.g., Cost * 2.5) is skipped.
+- **Pricing Management:** Implemented. Tier-based pricing (e.g., Standard vs. Premium) mapped to companies.
+- **Company & Employee Management:** Implemented. Realistic data seeding provided.
+- **Order Management:** Implemented. Full order state machine (Draft -> Placed -> Confirmed -> Delivered -> Cancelled).
+- **Kitchen Preparation Board:** Implemented. Real-time board grouping items by station and tracking completion.
+- **Dispatch Management:** Implemented. Groups orders into drops (same company, address, time) for driver assignment.
+- **Driver Dashboard:** Implemented. Mobile-optimized daily manifest for route tracking.
+- **Company Billing:** Partially implemented. Invoices can be generated from Confirmed/Delivered orders, but PDF generation is out of scope.
+- **Platform Settings:** Not implemented. Cut-off times and holidays are handled via API/database defaults rather than a UI panel.
+
+---
+
+## 4. Technology Stack
+
+| Technology | Purpose | Where It Is Used |
+|------------|---------|------------------|
+| **Next.js 14 (App Router)** | Frontend Framework | `frontend/` - UI, Routing, Client-side fetching |
+| **TailwindCSS** | Styling | `frontend/` - UI components and layout |
+| **NestJS** | Backend Framework | `backend/` - API, Business Logic, RBAC |
+| **Prisma** | ORM | `backend/` - Database access and typing |
+| **PostgreSQL** | Relational Database | Data persistence |
+| **JWT** | Authentication | Backend auth guards & Frontend session |
+
+---
+
+## 5. Application Screenshots
+*(Note: Refer to project artifacts for actual screenshots if available)*
+- `dashboard.png` - Admin metrics and graphs.
+- `kitchen_board.png` - Station-based prep unit view.
+- `dispatch.png` - Driver assignment and drop grouping.
+- `mobile_driver.png` - Driver's delivery checklist.
+
+---
+
+## 6. Live Demo and Test Credentials
+There is no live deployment. Please use local setup.
+
+**Test Accounts (Passwords are exactly `Test@1234` or `Admin@123` depending on the seed config, but for this specific seed run:**
+- **Admin**: `admin@test.com` / `Test@1234`
+- **Kitchen**: `kitchen@test.com` / `Test@1234`
+- **Dispatch**: `dispatch@test.com` / `Test@1234`
+- **Driver**: `driver@test.com` / `Test@1234`
+
+---
+
+## 7. System Architecture
+
+```mermaid
+graph TD
+    Client[Next.js Frontend] -->|REST API + JWT| API[NestJS Backend]
+    API --> Auth[AuthGuard & RolesGuard]
+    Auth --> Controllers[Domain Controllers]
+    Controllers --> Services[Business Logic Services]
+    Services --> Prisma[Prisma ORM]
+    Prisma --> DB[(PostgreSQL)]
+```
+**Responsibilities:**
+- **Frontend:** Purely presentational. Handles UI state, routing, and token storage.
+- **Backend:** The absolute source of truth. All business logic, price resolution, and role validation happens here.
+
+---
+
+## 8. Database Design and ER Diagram
+
+```mermaid
 erDiagram
     Company ||--o{ Employee : "has"
-    Company ||--o{ Order : "billed for"
-    Company {
-        string id
-        string name
-        string emailDomains
-        string deliveryAddresses
-    }
-    PriceTier ||--o{ Company : "assigned to"
-    PriceTier ||--o{ DishPrice : "determines"
+    Company ||--o{ Order : "pays for"
+    Company ||--o{ Invoice : "billed via"
     
-    Employee ||--o{ Order : "receives"
-    Employee {
-        string id
-        string email
-        string companyId
-    }
-
+    Employee ||--o{ Order : "places"
+    
     Dish ||--o{ DishPrice : "has prices in"
-    Dish ||--o{ OptionGroup : "has options"
-    Dish {
-        string id
-        string name
-        string sku
-        string temperature
-        float costPrice
-    }
+    PriceTier ||--o{ DishPrice : "determines"
+    PriceTier ||--o{ Company : "assigned to"
 
     Order ||--o{ OrderLine : "contains"
     Order {
-        string id
         string status
         datetime deliveryDate
-        datetime kitchenReadyAt
-        datetime dispatchReadyAt
+        float totalAmount
+        string driverId
     }
 
-    OrderLine ||--o{ OrderLineOption : "includes"
-    OrderLine {
-        int quantity
-        float unitPrice
-        string dishId
+    OrderLine ||--o{ Combination : "broken into prep units"
+    Combination {
+        boolean isDone
+        string kitchenStation
     }
-\`\`\`
+```
+**Important Decisions:**
+- **Combinations over simple lines:** A single order line (e.g., 5 Burgers) is broken into `Combination` records (prep units) so the kitchen can mark individual configurations as completed.
+- **Invoice Relation:** An `Order` has an optional `invoiceId`. Once billed, it is permanently locked to that invoice.
 
 ---
 
-## 3. Key Decisions and Trade-offs
+## 9. Role-Based Access Control
+Enforced server-side using NestJS `@Roles()` decorators.
 
-1. **Monorepo vs Polyrepo:** Opted for a loose monorepo structure (separate `frontend` and `backend` folders) rather than a strict Turborepo. This minimized config overhead given the 48-hour timeline while keeping code conceptually grouped.
-2. **Server-side Security over Client-side Hiding:** While the UI dynamically hides buttons based on user roles, **every** endpoint in NestJS is strictly guarded using `@UseGuards(RolesGuard)` and `@Roles()`. You cannot bypass access controls by sending raw HTTP requests.
-3. **Database Seeding Strategy:** Wrote a highly robust Prisma seed script that automatically generates consistent test environments. This ensured that UI verification always happened against realistic corporate data (e.g., Acme Corp, Heizen) rather than blank screens.
-4. **Rich UI/UX:** Prioritized building a highly polished, "premium" feel on the frontend (using glassmorphism, dynamic CSS animations, and seeded Unsplash imagery) over building complex backend edge-case calculators (like nested option validation).
-
----
-
-## 4. Prioritisation Notes (What was built, skipped, and why)
-
-**What I Built:**
-- ✅ **Domain Modeling & Core Flow:** Full end-to-end traversal from Order Creation -> Kitchen Board -> Dispatch grouping -> Driver Mobile view.
-- ✅ **Role-Based Access Control:** Strict server-side and client-side isolation for Admin, Kitchen, Dispatch, and Drivers.
-- ✅ **Dynamic Dashboards:** Context-aware landing pages for every role (detailed below).
-- ✅ **Catalogue & Pricing:** Core structures for dishes, categories, and multiple price tiers.
-
-**What I Skipped:**
-- ❌ **Derived Pricing UI:** The PDF mentioned allowing prices like "cost x 2.4". While the DB can store absolute numbers, I skipped building the UI/engine to parse and recalculate formulas. Flat pricing was prioritized to get the order flow working.
-- ❌ **CSV Bulk Import:** Skipped to save time. It's a solved problem (e.g., using Papaparse), but UI-heavy to implement row-level error reporting cleanly.
-- ❌ **Complex Calendar Mathematics:** Skipped the logic that counts backwards while skipping company holidays for cut-offs. I implemented manual cut-off processing endpoints instead.
-- ❌ **Company Menu Hiding:** The database structure allows for it, but the UI to preview the menu *exactly* as a specific company employee sees it was cut for time.
-
-**What I Would Do Next With More Time:**
-- Implement a global Settings UI panel so Admins can tweak cut-off thresholds without touching the database.
-- Build the derived pricing engine.
-- Enhance the Kitchen Board to actually color-code "late" or "at-risk" prep units based on real-time clock comparisons to the `kitchenReadyAt` timestamp.
-
-**Ambiguous Requirements & Interpretations:**
-- *Requirement:* "A unit is routed to its dish's kitchen station, or 'Unassigned' if none." 
-  *Interpretation:* We modeled this as a simple string on the Dish model rather than creating a dedicated `Station` database table, assuming stations are fluid and text-based grouping is sufficient for the Kitchen Board.
-- *Requirement:* "Drop Grouping."
-  *Interpretation:* Grouped by strict exact-matches on `companyId`, `deliveryAddress`, and `deliveryDate`.
+| Role | View Access | Modify Access |
+|------|------------|---------------|
+| **ADMIN** | Everything | Full CRUD on Companies, Catalogue, Billing |
+| **KITCHEN** | Kitchen Board only | Can mark prep units as started/done |
+| **DISPATCH**| Dispatch Board only | Can assign drivers to drops |
+| **DRIVER** | Only own deliveries | Can mark assigned orders as delivered |
 
 ---
 
-## 5. Dashboard Definitions
+## 10. Core Business Logic and Workflows
 
-As required by section 4.11, here is how each role's dashboard is structured:
+**A. Order Lifecycle**
+`DRAFT` -> `PLACED` -> `CONFIRMED` -> `DELIVERED`. 
+Orders are `PLACED` by employees. When the cut-off time passes, they become `CONFIRMED` and appear in the Kitchen. Once dropped off, they are `DELIVERED`.
+
+**B. Pricing Resolution**
+Companies are assigned a `PriceTier`. When an order is created, the system locks the current price for that tier into the `OrderLine` to prevent historical data mutation if catalog prices change later.
+
+**C. Order Cut-off Logic**
+Order confirmation happens via an explicit API endpoint (intended to be hit by a cron job or Admin trigger). 
+
+**D. Kitchen Preparation**
+The kitchen doesn't see "Orders". They see "Combinations" grouped by `kitchenStation` (e.g., Hot, Cold, Grill). When all combinations for an order are marked `isDone`, the parent Order `kitchenReadyAt` timestamp is populated.
+
+**E. Dispatch and Delivery**
+Dispatchers see orders grouped by `deliveryAddress` and `companyId`. They assign a `driverId`.
+
+**F. Company Billing**
+The system looks for all `CONFIRMED` or `DELIVERED` orders where `invoiceId == null` and allows Admins to group them into an `Invoice` tied to the `Company`.
+
+---
+
+## 11. Dashboard Definitions and Calculations
 
 ### Admin Dashboard
-- **What is shown:** Top-level revenue metrics, total active companies, pending invoices, and recent global order activity.
-- **Why they need it:** Admins need a bird's-eye view of business health and bottlenecks.
-- **Calculations:** 
-  - *Today's Revenue:* Sum of all `CONFIRMED` or `DELIVERED` order totals where `deliveryDate` is today. Cancelled/Draft orders are explicitly excluded.
-  - *Active Orders:* Count of orders currently in `PLACED` or `CONFIRMED` states across all dates.
-- **What was omitted:** Deep-dive operational metrics (like average kitchen prep time) were omitted to prevent visual clutter.
+- **Total Revenue:** Sum of `totalAmount` for `CONFIRMED` or `DELIVERED` orders for today. Excludes Draft/Cancelled.
+- **Active Orders:** Count of `PLACED` or `CONFIRMED` orders for today.
 
-### Kitchen Dashboard (Board)
-- **What is shown:** A split view of Prep Units grouped by Station.
-- **Why they need it:** A kitchen lead at 6 AM only cares about what needs to be chopped, cooked, and plated *right now*.
-- **Calculations:** Pulls `OrderLine` items joined with `Dish`, filtered where order status is `CONFIRMED`. `Draft` and `Placed` orders are completely invisible to the kitchen.
-- **What was omitted:** Financials and pricing. The kitchen staff does not need to know how much a dish costs, only that it needs to be made.
+### Kitchen Dashboard
+- **What is shown:** Prep units (`Combinations`) filtered for `deliveryDate == today` AND `status == CONFIRMED`.
+- **Excluded:** Pricing, Draft orders, Delivered orders. Kitchen only sees what needs to be cooked *right now*.
 
 ### Dispatch Dashboard
-- **What is shown:** Orders grouped into "Drops", driver assignment status, and readiness tracking.
-- **Why they need it:** Dispatchers need to quickly identify which orders are stuck in the kitchen and which are ready to be handed to drivers.
-- **Calculations:** Groups `CONFIRMED` orders matching exact timestamps and locations. Excludes `DELIVERED` orders so the board only shows pending work.
+- **What is shown:** Orders grouped by exact Company, Address, and Date.
+- **Excluded:** Orders that are already delivered.
 
 ### Driver Dashboard
-- **What is shown:** A mobile-optimized, chronological list of their assigned drops for *today only*.
-- **Why they need it:** Drivers are on the road; they need large buttons, clear addresses, and a zero-distraction UI to mark things delivered.
-- **Calculations:** strictly filters orders where `assignedDriverId == currentUserId` AND `deliveryDate == today()`.
-- **What was omitted:** Future deliveries. Showing tomorrow's routes creates a risk of a driver marking the wrong day's drop as complete.
+- **What is shown:** Orders where `driverId == currentUser.id` AND `deliveryDate == today`.
+- **Excluded:** Tomorrow's deliveries (to prevent accidental early completion).
+
+---
+
+## 12. Installation and Local Setup
+
+**Prerequisites:** Node 18+, PostgreSQL.
+
+```bash
+# 1. Backend Setup
+cd backend
+npm install
+# Set DATABASE_URL in .env
+npx prisma db push --force-reset
+npx prisma db seed
+npm run dev
+
+# 2. Frontend Setup (in a new terminal)
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 13. Environment Variables
+| Variable | Required | Description | Example Format |
+|----------|----------|-------------|----------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/db` |
+| `JWT_SECRET` | Yes | Secret for signing auth tokens | `super-secret-key-123` |
+
+*(Create a `.env` file in the backend directory with these variables)*
+
+---
+
+## 14. API Documentation (Key Routes)
+| Module | Method | Endpoint | Description | Auth |
+|--------|--------|----------|-------------|------|
+| Auth | POST | `/auth/login` | Returns JWT token | Public |
+| Kitchen| GET | `/kitchen/board`| Gets station prep units | KITCHEN |
+| Dispatch| GET| `/dispatch/drops`| Groups orders for drivers| DISPATCH |
+| Orders | POST | `/orders/cutoff`| Confirms pending orders | ADMIN |
+
+---
+
+## 15. Key Technical Decisions and Trade-offs
+1. **NestJS Backend:** Chosen for strict module boundaries, dependency injection, and out-of-the-box role guards.
+2. **Prisma ORM:** Chosen for rapid type-safe database querying.
+3. **Monetary Precision:** Stored as floats for speed, though real-world production would use integer cents to prevent floating-point math errors.
+4. **Timezone Handling:** All dates converted to UTC midnight before storing. (Bug previously encountered and fixed in seeding logic).
+
+---
+
+## 16. Prioritisation and Implementation Status
+
+| Feature | Priority | Implementation Status | Reason |
+|---------|----------|-----------------------|--------|
+| Auth & RBAC | High | Completed | Foundational security requirement. |
+| Order Flow | High | Completed | Core business requirement. |
+| Derived Pricing | Medium | Not Implemented | UI complexity too high for 48h limit. |
+| Settings UI | Low | Not Implemented | Defaulted to database fallbacks. |
+| CSV Imports | Low | Not Implemented | Solved problem; UI heavy to build cleanly. |
+
+---
+
+## 17. Assumptions and Ambiguous Requirements
+- **Drop Grouping:** Assumed exact string matches on `companyId` and `deliveryAddress` are sufficient for a "Drop".
+- **Kitchen Stations:** Assumed stations are fluid string tags on a Dish rather than rigid database tables.
+- **Invoicing:** Assumed invoices are simple logical groupings of orders in the DB, without generating physical PDF files.
+
+---
+
+## 18. Testing Strategy
+- **Manual Testing:** Heavy emphasis on manual E2E testing via the Prisma Seed script (which generates 30 complex scenarios, edge cases, varied statuses, and timezones).
+- **Unit/Integration Tests:** *Not implemented* due to the 48-hour time constraint. If time permitted, `Jest` would be used for API endpoint integration tests.
+
+---
+
+## 19. Future Improvements
+- Build out the automated Chron jobs for cut-offs.
+- Implement WebSockets for real-time Kitchen board updates without refreshing.
+- Implement proper integer-based monetary calculations.
+
+---
+
+## 20. Out of Scope
+- Customer-facing ordering portals (strictly an admin tool).
+- Payment gateway integration (Stripe, etc.).
+- Delivery GPS tracking.
+
+---
+
+## 21. Project Directory Structure
+```text
+fernleaf-kitchen/
+├── backend/                  # NestJS API
+│   ├── prisma/               # Schema and Seed Scripts
+│   └── src/
+│       ├── auth/             # JWT Logic and Role Guards
+│       ├── kitchen/          # Kitchen Board Logic
+│       └── dispatch/         # Drop Grouping Logic
+├── frontend/                 # Next.js App
+│   ├── src/
+│   │   ├── app/              # Routes (admin, kitchen, dispatch)
+│   │   ├── components/       # Reusable UI (Sidebar, Metrics)
+│   │   └── lib/              # API Client (Axios)
+└── README.md
+```
+
+---
+
+## 22. Author and Project Information
+**Project:** Fernleaf Kitchen
+**Target Audience:** Evaluators looking for architectural soundness, pragmatic prioritization, and clean, role-based separation of concerns.
