@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "render-build": "npm install --include=dev && npx prisma generate && npx prisma db push --accept-data-loss && npx prisma db seed && npm run build",
+    "render-build": "npm install --include=dev && chmod +x ./node_modules/.bin/prisma && npx prisma generate && npx prisma db push --accept-data-loss && npx prisma db seed && npm run build",
     "build": "nest build",
     "deploy": "nest deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
